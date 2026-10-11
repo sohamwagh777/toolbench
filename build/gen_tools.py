@@ -14,7 +14,7 @@ from shell import render_page, render_landing
 from gen_helpers import CAT_ACCENTS
 
 ROOT = os.path.dirname(HERE)
-OUT = os.path.join(ROOT, "out")
+OUT = os.path.join(ROOT, "docs")  # docs/ = GitHub Pages site root
 SCRATCH = os.path.expanduser("~/.hermes/cache/scratch/htmltools")
 
 from desc_map import M as DESCMAP

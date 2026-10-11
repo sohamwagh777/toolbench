@@ -4,7 +4,7 @@
 # nothing outside ~/toolbench/out is ever reachable (path traversal can only
 # resolve inside that root; Python's http.server also blocks %2e%2e traversal).
 # No env vars, tokens or secrets in this file.
-ROOT="/home/soham-7/toolbench/out"
+ROOT="/home/soham-7/toolbench/docs"
 PORT="${TOOLBENCH_PORT:-8090}"
 if ss -tln 2>/dev/null | grep -q ":$PORT "; then
   echo "toolbench already listening on :$PORT"

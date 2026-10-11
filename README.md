@@ -10,14 +10,15 @@ also a demo of an audited design workflow: the same tool pages first shipped in
 an ad-hoc Tailwind-slate look, failed a 10-point slop audit, and were rebuilt
 onto a single dark "workbench" design system (one shell, one accent-per-category,
 serif titles + mono detail, real density, no decorative icon-tiles, no fake
-dashboards). Run: `python3 build/gen_tools.py && python3 build/reskin.py` to
-regenerate all 101 pages deterministically.
+dashboards). Run `python3 build/gen_tools.py && python3 build/reskin.py` to
+regenerate all 101 pages, then `node build/smoke.js docs/tools` to prove they
+every one executes clean (100/100 PASS) — no browser needed.
 
 ## What's inside
 
-- **100 tools** in `out/tools/` — each a single self-contained HTML file
+- **100 tools** in `docs/tools/` — each a single self-contained HTML file
   (embedded CSS/JS, ~1.2 MB for the entire suite)
-- **Landing page** (`out/index.html`) — dark editorial catalog with live search
+- **Landing page** (`docs/index.html`) — dark editorial catalog with live search
   (type to filter, `/` to focus, `Esc` to clear), category chips, and per-tool
   descriptions + how-to-use lines
 - **Generator** (`build/`) — the suite is *built, not hand-placed*:
@@ -43,23 +44,30 @@ regenerate all 101 pages deterministically.
 
 ## Quick start
 
-**Just want to use it (no install):**
+**Just want to use it:** either enable Pages (Deploy a static site from
+→ `/docs` — see below) or run a static file server on any machine and open
+`docs/index.html`. The landing page links tools via relative `tools/*.html`
+hrefs and uses no absolute paths or CDN refs, so it works the same on
+`file://`, on a LAN IP, and under the Pages `/toolbench/` base path.
 
 ```bash
-cd out
-python3 -m http.server 8090 --bind 0.0.0.0 --directory .
-# open http://localhost:8090/  → landing page, Esc returns from any tool
+python3 -m http.server 8090 --directory docs   # or: cd docs && python3 -m http.server
+# http://localhost:8090/  → landing page, Esc returns from any tool
 ```
 
 **Rebuild the whole suite from source:**
 
 ```bash
-python3 build/gen_tools.py    # regenerates out/ (101 HTML files, asserts == 100 tools)
-node build/smoke.js out/tools  # functional smoke: every page's JS executes clean
+python3 build/gen_tools.py      # regenerates docs/ (101 HTML files, asserts == 100 tools)
+node build/smoke.js docs/tools  # functional smoke: every page's JS executes clean
 ```
 
 `gen_tools.py` hard-asserts the 100-tool invariant and the smoke harness must
 report `PASS: 100 pages` before a build is considered good.
+
+**GitHub Pages:** this site deploys from `/docs` (branch `master`). After any
+rebuild, push to `master` and Pages redeploys automatically — no routing or
+rewrites needed, the whole site is plain files.
 
 ## Privacy & security posture
 
@@ -70,16 +78,17 @@ report `PASS: 100 pages` before a build is considered good.
 - JS Scratch Runner's code box is sandboxed and escaped; hash tools use
   WebCrypto (`crypto.subtle`) only, never hand-rolled crypto for the real ones
 - No secrets, tokens, personal data, or environment paths in any shipped file
-- Hosting: `serve.sh` pins the file root to the read-only `out/` dir (path
+- Hosting: `serve.sh` pins the file root to the read-only `docs/` dir (path
   traversal-proof server), so worst case a bad request gets a 404, never a file
 
 ## Layout
 
 ```
 toolbench/
-├── out/                  the built suite (deployable as-is, 101 files)
-│   ├── index.html        landing / catalog
+├── docs/                 the built site (GitHub Pages site root — deploy from /docs)
+│   ├── index.html        landing / catalog (Pages entry point)
 │   ├── manifest.json     tool inventory (regenerated on every build)
+│   ├── .nojekyll         skip Jekyll processing (plain-HTML site)
 │   └── tools/*.html      the 100 tools
 ├── build/                the build system (sources)
 │   ├── gen_tools.py      renderer + landing generator
@@ -94,8 +103,7 @@ toolbench/
 All 100 tool pages execute their inline JS without a top-level throw under the
 smoke harness (`PASS: 100 pages`), and a representative sample (Expression
 Solver, Text Diff, Wordle Helper, Base Converter, Base64) was additionally
-driven end-to-end in a real browser with functional outputs checked, over the
-LAN IP — not just opened.
+driven end-to-end in a real browser with functional outputs checked.
 
 ---
 

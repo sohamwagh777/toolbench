@@ -20,7 +20,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from desc_map import M as DESCMAP
 
-TOOLS = os.path.join(HERE, "..", "out", "tools")
+TOOLS = os.path.join(HERE, "..", "docs", "tools")
 
 # filename stem -> desc_map key (dashes vs underscores twins)
 def key_for(fname):
