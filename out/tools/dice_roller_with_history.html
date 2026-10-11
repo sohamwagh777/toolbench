@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dice Roller</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --accent: #8b5cf6;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+    .container {
+      width: 100%;
+      max-width: 760px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    header { text-align: center; }
+    header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.35rem; }
+    header p { color: var(--text-muted); font-size: 0.95rem; }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .dice-selector-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+      gap: 0.5rem;
+    }
+    .dice-type-btn {
+      background: #0b1120;
+      border: 2px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 0.75rem 0.25rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+    .dice-type-btn:hover { border-color: var(--primary); transform: translateY(-2px); }
+    .dice-type-btn.active {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: var(--primary);
+      color: #60a5fa;
+    }
+    .controls-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .input-group {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+    input[type="number"] {
+      background: #0b1120;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 0.65rem;
+      border-radius: 6px;
+      width: 70px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    input[type="number"]:focus { border-color: var(--primary); }
+    button.roll-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.15s ease, transform 0.05s ease;
+    }
+    button.roll-btn:hover { background: var(--primary-hover); }
+    button.roll-btn:active { transform: scale(0.98); }
+    .presets-row {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .preset-btn {
+      background: #0b1120;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .preset-btn:hover { color: var(--text); border-color: #475569; }
+    .result-stage {
+      background: #060913;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .total-display {
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: #38bdf8;
+      line-height: 1;
+    }
+    .dice-dice-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .die-face {
+      width: 44px;
+      height: 44px;
+      background: #1e293b;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #f8fafc;
+      animation: popIn 0.2s ease;
+    }
+    .die-face.dropped {
+      opacity: 0.4;
+      text-decoration: line-through;
+      border-color: #475569;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.6); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .meta-text { font-size: 0.85rem; color: var(--text-muted); }
+    .history-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      background: #0b1120;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .history-table th, .history-table td {
+      padding: 0.65rem 0.85rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .history-table th { color: var(--text-muted); background: #0f172a; font-weight: 600; }
+    .history-table tr:last-child td { border-bottom: none; }
+    .clear-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .clear-btn:hover { color: var(--danger); border-color: var(--danger); }
+  
+:root{--tb-acc:#d8a25e}
+header.tb{display:flex;align-items:center;gap:14px;max-width:860px;margin:0 auto;padding:20px 20px 6px}
+header.tb .back{font:600 11px/1 ui-monospace,'Cascadia Mono','SF Mono',Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut,#8f949b);border:1px solid var(--border,#282c32);padding:9px 12px;border-radius:8px;white-space:nowrap}
+header.tb .back:hover{color:var(--text,#ecebe6);border-color:#8f949b}
+header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 ui-monospace,'Cascadia Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#d8a25e}
+header.tb h1{font:400 21px/1.25 Georgia,'Iowan Old Style',serif;margin:4px 0 3px;color:var(--text,#ecebe6)}
+header.tb .desc,header.tb .howto,header.tb .priv{margin:0;font-size:12.5px;color:var(--text-muted,#8f949b)}
+header.tb .howto{margin-top:4px}header.tb .howto b{color:#ecebe6;font-weight:600}
+header.tb .priv{margin-top:4px;font-size:11px;opacity:.75}
+header.tb .tag{font:600 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--mut,#8f949b);text-decoration:none}
+@media(max-width:640px){header.tb{padding:14px 14px 4px}}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
+<div class="mid"><div class="cat">GAMES & PLAY</div><h1>Dice Roller (with history)</h1><p class="desc">D6 roll tracker with live odds — watch actual frequencies drift toward true odds as rolls pile up.</p><p class="howto"><b>How to use.</b> Roll the dice; use Reset if you suspect the dice, not the maths.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></div>
+<a class="tag" href="../index.html">TOOLBENCH</a></header>
+
+<p>Roll standard and tabletop RPG polyhedral dice with modifier math and persistent history.</p>
+    </header>
+
+    <div class="card">
+      <div class="dice-selector-grid" id="diceGrid">
+        <button class="dice-type-btn" onclick="selectDice(4, this)">d4</button>
+        <button class="dice-type-btn active" onclick="selectDice(6, this)">d6</button>
+        <button class="dice-type-btn" onclick="selectDice(8, this)">d8</button>
+        <button class="dice-type-btn" onclick="selectDice(10, this)">d10</button>
+        <button class="dice-type-btn" onclick="selectDice(12, this)">d12</button>
+        <button class="dice-type-btn" onclick="selectDice(20, this)">d20</button>
+        <button class="dice-type-btn" onclick="selectDice(100, this)">d100</button>
+      </div>
+
+      <div class="controls-row">
+        <div class="input-group">
+          <label for="diceCount">Quantity:</label>
+          <input type="number" id="diceCount" value="2" min="1" max="50">
+        </div>
+        <div class="input-group">
+          <label for="modifier">Modifier (+/-):</label>
+          <input type="number" id="modifier" value="0">
+        </div>
+        <button class="roll-btn" onclick="rollCurrent()">🎲 ROLL</button>
+      </div>
+
+      <div class="presets-row">
+        <span style="font-size:0.8rem; color:var(--text-muted);">Quick Presets:</span>
+        <button class="preset-btn" onclick="applyPreset(1, 20, 0, 'Standard d20')">1d20</button>
+        <button class="preset-btn" onclick="applyPreset(2, 6, 0, '2d6 standard')">2d6</button>
+        <button class="preset-btn" onclick="rollAdvantage()">Advantage (2d20 drop lowest)</button>
+        <button class="preset-btn" onclick="rollDisadvantage()">Disadvantage (2d20 drop highest)</button>
+        <button class="preset-btn" onclick="roll4d6DropLowest()">Ability (4d6 drop lowest)</button>
+      </div>
+
+      <div class="result-stage">
+        <div class="meta-text" id="formulaText">2d6 + 0</div>
+        <div class="total-display" id="totalResult">-</div>
+        <div class="dice-dice-container" id="diceContainer"></div>
+        <div class="meta-text" id="detailsText">Click ROLL to generate numbers</div>
+      </div>
+
+      <div class="history-card">
+        <div class="history-header">
+          <span style="font-size:0.85rem; font-weight:600; color:var(--text-muted);">Roll History</span>
+          <button class="clear-btn" onclick="clearHistory()">Clear History</button>
+        </div>
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Formula</th>
+              <th>Rolls</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody">
+            <tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No rolls yet in this session.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentSides = 6;
+    let history = [];
+
+    function selectDice(sides, btn) {
+      currentSides = sides;
+      document.querySelectorAll('.dice-type-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function applyPreset(count, sides, mod, desc) {
+      document.getElementById('diceCount').value = count;
+      document.getElementById('modifier').value = mod;
+      currentSides = sides;
+      document.querySelectorAll('.dice-type-btn').forEach(b => {
+        b.classList.toggle('active', b.textContent === `d${sides}`);
+      });
+      rollCurrent();
+    }
+
+    function rollCurrent() {
+      const count = Math.max(1, Math.min(50, parseInt(document.getElementById('diceCount').value) || 1));
+      const mod = parseInt(document.getElementById('modifier').value) || 0;
+
+      const rolls = [];
+      for (let i = 0; i < count; i++) {
+        rolls.push(Math.floor(Math.random() * currentSides) + 1);
+      }
+
+      const sum = rolls.reduce((a, b) => a + b, 0);
+      const total = sum + mod;
+
+      const modStr = mod > 0 ? ` + ${mod}` : (mod < 0 ? ` - ${Math.abs(mod)}` : '');
+      const formula = `${count}d${currentSides}${modStr}`;
+
+      displayRollResult({
+        formula: formula,
+        total: total,
+        rolls: rolls.map(r => ({ val: r, dropped: false })),
+        details: `Sum: ${sum}${mod !== 0 ? ` | Modifier: ${mod > 0 ? '+' : ''}${mod}` : ''}`
+      });
+    }
+
+    function rollAdvantage() {
+      const r1 = Math.floor(Math.random() * 20) + 1;
+      const r2 = Math.floor(Math.random() * 20) + 1;
+      const best = Math.max(r1, r2);
+      displayRollResult({
+        formula: '1d20 with Advantage',
+        total: best,
+        rolls: [
+          { val: r1, dropped: r1 < r2 },
+          { val: r2, dropped: r2 < r1 }
+        ],
+        details: `Kept highest of [${r1}, ${r2}]`
+      });
+    }
+
+    function rollDisadvantage() {
+      const r1 = Math.floor(Math.random() * 20) + 1;
+      const r2 = Math.floor(Math.random() * 20) + 1;
+      const worst = Math.min(r1, r2);
+      displayRollResult({
+        formula: '1d20 with Disadvantage',
+        total: worst,
+        rolls: [
+          { val: r1, dropped: r1 > r2 },
+          { val: r2, dropped: r2 > r1 }
+        ],
+        details: `Kept lowest of [${r1}, ${r2}]`
+      });
+    }
+
+    function roll4d6DropLowest() {
+      const rolls = [
+        Math.floor(Math.random() * 6) + 1,
+        Math.floor(Math.random() * 6) + 1,
+        Math.floor(Math.random() * 6) + 1,
+        Math.floor(Math.random() * 6) + 1
+      ];
+      const minVal = Math.min(...rolls);
+      let droppedOne = false;
+      const items = rolls.map(r => {
+        if (!droppedOne && r === minVal) {
+          droppedOne = true;
+          return { val: r, dropped: true };
+        }
+        return { val: r, dropped: false };
+      });
+
+      const total = items.filter(x => !x.dropped).reduce((a, b) => a + b.val, 0);
+
+      displayRollResult({
+        formula: '4d6 drop lowest',
+        total: total,
+        rolls: items,
+        details: `Dropped lowest: ${minVal}`
+      });
+    }
+
+    function displayRollResult(res) {
+      document.getElementById('formulaText').textContent = res.formula;
+      document.getElementById('totalResult').textContent = res.total;
+      document.getElementById('detailsText').textContent = res.details;
+
+      const container = document.getElementById('diceContainer');
+      container.innerHTML = res.rolls.map(r => `
+        <div class="die-face ${r.dropped ? 'dropped' : ''}" title="${r.dropped ? 'Dropped die' : 'Counted'}">
+          ${r.val}
+        </div>
+      `).join('');
+
+      // Add to history
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const rollStr = res.rolls.map(r => r.dropped ? `(${r.val})` : r.val).join(', ');
+
+      history.unshift({
+        time: timeStr,
+        formula: res.formula,
+        rolls: rollStr,
+        total: res.total
+      });
+
+      if (history.length > 50) history.pop();
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const body = document.getElementById('historyBody');
+      if (history.length === 0) {
+        body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No rolls yet in this session.</td></tr>';
+        return;
+      }
+      body.innerHTML = history.map(h => `
+        <tr>
+          <td style="color:var(--text-muted);">${h.time}</td>
+          <td style="font-weight:600; color:#38bdf8;">${h.formula}</td>
+          <td>${h.rolls}</td>
+          <td style="font-weight:800; font-size:1rem; color:#a78bfa;">${h.total}</td>
+        </tr>
+      `).join('');
+    }
+
+    function clearHistory() {
+      history = [];
+      renderHistory();
+    }
+
+    window.addEventListener('DOMContentLoaded', rollCurrent);
+  </script>
+</body>
+</html>
+<script>
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!(e.target.closest&&e.target.closest('input,textarea,select'))){location.href='../index.html';}});
+</script>

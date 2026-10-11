@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tip Calculator</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --accent: #10b981;
+      --accent-hover: #059669;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+    .container {
+      width: 100%;
+      max-width: 580px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    header h1 {
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input-prefix {
+      position: absolute;
+      left: 1rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    input[type="number"] {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1.15rem;
+      padding: 0.75rem 1rem 0.75rem 2.25rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="number"]:focus {
+      border-color: var(--primary);
+    }
+    .tip-buttons {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .btn-tip {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.6rem 0.25rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-tip:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .btn-tip.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .custom-tip-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .custom-tip-wrapper input {
+      padding-left: 1rem;
+    }
+    .split-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-step {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 44px;
+      height: 44px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .btn-step:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .split-controls input {
+      text-align: center;
+      padding-left: 1rem;
+      font-size: 1.1rem;
+    }
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+      user-select: none;
+      cursor: pointer;
+    }
+    .checkbox-group input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+    .checkbox-group span {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    .results-card {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 1rem;
+    }
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .result-row:last-child {
+      border-bottom: none;
+    }
+    .result-row.highlight {
+      margin-top: 0.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+      font-weight: 700;
+    }
+    .result-row.highlight .amount {
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+    .result-label {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+    .result-label small {
+      display: block;
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+    .result-value {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+    .btn-reset {
+      flex: 1;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.75rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-reset:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      border-color: #64748b;
+    }
+  
+:root{--tb-acc:#d8a25e}
+header.tb{display:flex;align-items:center;gap:14px;max-width:860px;margin:0 auto;padding:20px 20px 6px}
+header.tb .back{font:600 11px/1 ui-monospace,'Cascadia Mono','SF Mono',Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut,#8f949b);border:1px solid var(--border,#282c32);padding:9px 12px;border-radius:8px;white-space:nowrap}
+header.tb .back:hover{color:var(--text,#ecebe6);border-color:#8f949b}
+header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 ui-monospace,'Cascadia Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#d8a25e}
+header.tb h1{font:400 21px/1.25 Georgia,'Iowan Old Style',serif;margin:4px 0 3px;color:var(--text,#ecebe6)}
+header.tb .desc,header.tb .howto,header.tb .priv{margin:0;font-size:12.5px;color:var(--text-muted,#8f949b)}
+header.tb .howto{margin-top:4px}header.tb .howto b{color:#ecebe6;font-weight:600}
+header.tb .priv{margin-top:4px;font-size:11px;opacity:.75}
+header.tb .tag{font:600 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--mut,#8f949b);text-decoration:none}
+@media(max-width:640px){header.tb{padding:14px 14px 4px}}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
+<div class="mid"><div class="cat">MATH & FINANCE</div><h1>Tip Calculator</h1><p class="desc">Bill ÷ people with a 0–30 % tip slider — fair per-person shares.</p><p class="howto"><b>How to use.</b> Edit the bill or the slider and it recalculates; use +/− or the slider to set people.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></div>
+<a class="tag" href="../index.html">TOOLBENCH</a></header>
+
+<p>Calculate tips, split bills, and compute total costs per person instantly.</p>
+    </header>
+
+    <div class="form-group">
+      <label for="bill">Bill Amount</label>
+      <div class="input-wrapper">
+        <span class="input-prefix">$</span>
+        <input type="number" id="bill" placeholder="0.00" min="0" step="0.01" value="50.00">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Tip Percentage</label>
+      <div class="tip-buttons">
+        <button type="button" class="btn-tip" data-tip="10">10%</button>
+        <button type="button" class="btn-tip active" data-tip="15">15%</button>
+        <button type="button" class="btn-tip" data-tip="18">18%</button>
+        <button type="button" class="btn-tip" data-tip="20">20%</button>
+        <button type="button" class="btn-tip" data-tip="25">25%</button>
+      </div>
+      <div class="custom-tip-wrapper">
+        <input type="number" id="customTip" placeholder="Custom %" min="0" max="100" step="0.5">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="people">Number of People</label>
+      <div class="split-controls">
+        <button type="button" class="btn-step" id="btnDec">-</button>
+        <input type="number" id="people" value="1" min="1" step="1">
+        <button type="button" class="btn-step" id="btnInc">+</button>
+      </div>
+    </div>
+
+    <label class="checkbox-group">
+      <input type="checkbox" id="roundUp">
+      <span>Round up total per person to nearest whole dollar</span>
+    </label>
+
+    <div class="results-card">
+      <div class="result-row">
+        <div class="result-label">Tip Amount <small>Total</small></div>
+        <div class="result-value" id="tipTotal">$7.50</div>
+      </div>
+      <div class="result-row">
+        <div class="result-label">Tip Per Person</div>
+        <div class="result-value" id="tipPerPerson">$7.50</div>
+      </div>
+      <div class="result-row">
+        <div class="result-label">Bill Per Person</div>
+        <div class="result-value" id="billPerPerson">$50.00</div>
+      </div>
+      <div class="result-row highlight">
+        <div class="result-label">Total Per Person</div>
+        <div class="result-value amount" id="totalPerPerson">$57.50</div>
+      </div>
+      <div class="result-row">
+        <div class="result-label">Overall Bill Total</div>
+        <div class="result-value" id="overallTotal">$57.50</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn-reset" id="btnReset">Reset Calculator</button>
+    </div>
+  </div>
+
+  <script>
+    const billInput = document.getElementById('bill');
+    const tipButtons = document.querySelectorAll('.btn-tip');
+    const customTipInput = document.getElementById('customTip');
+    const peopleInput = document.getElementById('people');
+    const btnDec = document.getElementById('btnDec');
+    const btnInc = document.getElementById('btnInc');
+    const roundUpCheck = document.getElementById('roundUp');
+    const btnReset = document.getElementById('btnReset');
+
+    const tipTotalEl = document.getElementById('tipTotal');
+    const tipPerPersonEl = document.getElementById('tipPerPerson');
+    const billPerPersonEl = document.getElementById('billPerPerson');
+    const totalPerPersonEl = document.getElementById('totalPerPerson');
+    const overallTotalEl = document.getElementById('overallTotal');
+
+    let currentTipPercent = 15;
+
+    function formatCurrency(num) {
+      return '$' + (isNaN(num) || !isFinite(num) ? 0 : num).toFixed(2);
+    }
+
+    function calculate() {
+      const bill = parseFloat(billInput.value) || 0;
+      const people = Math.max(1, parseInt(peopleInput.value, 10) || 1);
+      const tipPercent = currentTipPercent;
+
+      let tipAmount = bill * (tipPercent / 100);
+      let totalAmount = bill + tipAmount;
+      let totalPerPerson = totalAmount / people;
+      let tipPerPerson = tipAmount / people;
+      let billPerPerson = bill / people;
+
+      if (roundUpCheck.checked && totalPerPerson > 0) {
+        const roundedPerPerson = Math.ceil(totalPerPerson);
+        const difference = (roundedPerPerson * people) - totalAmount;
+        totalPerPerson = roundedPerPerson;
+        totalAmount = roundedPerPerson * people;
+        tipAmount += difference;
+        tipPerPerson = tipAmount / people;
+      }
+
+      tipTotalEl.textContent = formatCurrency(tipAmount);
+      tipPerPersonEl.textContent = formatCurrency(tipPerPerson);
+      billPerPersonEl.textContent = formatCurrency(billPerPerson);
+      totalPerPersonEl.textContent = formatCurrency(totalPerPerson);
+      overallTotalEl.textContent = formatCurrency(totalAmount);
+    }
+
+    tipButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tipButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        customTipInput.value = '';
+        currentTipPercent = parseFloat(btn.dataset.tip);
+        calculate();
+      });
+    });
+
+    customTipInput.addEventListener('input', () => {
+      tipButtons.forEach(b => b.classList.remove('active'));
+      currentTipPercent = parseFloat(customTipInput.value) || 0;
+      calculate();
+    });
+
+    billInput.addEventListener('input', calculate);
+    peopleInput.addEventListener('input', calculate);
+    roundUpCheck.addEventListener('change', calculate);
+
+    btnDec.addEventListener('click', () => {
+      let val = parseInt(peopleInput.value, 10) || 1;
+      if (val > 1) {
+        peopleInput.value = val - 1;
+        calculate();
+      }
+    });
+
+    btnInc.addEventListener('click', () => {
+      let val = parseInt(peopleInput.value, 10) || 1;
+      peopleInput.value = val + 1;
+      calculate();
+    });
+
+    btnReset.addEventListener('click', () => {
+      billInput.value = '50.00';
+      peopleInput.value = '1';
+      roundUpCheck.checked = false;
+      customTipInput.value = '';
+      currentTipPercent = 15;
+      tipButtons.forEach(b => {
+        b.classList.toggle('active', b.dataset.tip === '15');
+      });
+      calculate();
+    });
+
+    calculate();
+  </script>
+</body>
+</html>
+<script>
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!(e.target.closest&&e.target.closest('input,textarea,select'))){location.href='../index.html';}});
+</script>

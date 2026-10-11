@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weight Converter</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --accent: #10b981;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+    .container {
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    header {
+      text-align: center;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+    }
+    header h1 {
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem;
+    }
+    .grid-inputs {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 500px) {
+      .grid-inputs {
+        grid-template-columns: 1fr;
+      }
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .unit-tag {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      background: rgba(59, 130, 246, 0.12);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+    }
+    input[type="number"] {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1.15rem;
+      font-weight: 600;
+      padding: 0.65rem 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="number"]:focus {
+      border-color: var(--primary);
+    }
+    .breakdown-section {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .breakdown-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+    .breakdown-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .breakdown-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .breakdown-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .breakdown-val {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .presets-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.6rem;
+    }
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+    @media (max-width: 480px) {
+      .presets-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .preset-btn {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .preset-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+  
+:root{--tb-acc:#d8a25e}
+header.tb{display:flex;align-items:center;gap:14px;max-width:860px;margin:0 auto;padding:20px 20px 6px}
+header.tb .back{font:600 11px/1 ui-monospace,'Cascadia Mono','SF Mono',Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut,#8f949b);border:1px solid var(--border,#282c32);padding:9px 12px;border-radius:8px;white-space:nowrap}
+header.tb .back:hover{color:var(--text,#ecebe6);border-color:#8f949b}
+header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 ui-monospace,'Cascadia Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#d8a25e}
+header.tb h1{font:400 21px/1.25 Georgia,'Iowan Old Style',serif;margin:4px 0 3px;color:var(--text,#ecebe6)}
+header.tb .desc,header.tb .howto,header.tb .priv{margin:0;font-size:12.5px;color:var(--text-muted,#8f949b)}
+header.tb .howto{margin-top:4px}header.tb .howto b{color:#ecebe6;font-weight:600}
+header.tb .priv{margin-top:4px;font-size:11px;opacity:.75}
+header.tb .tag{font:600 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--mut,#8f949b);text-decoration:none}
+@media(max-width:640px){header.tb{padding:14px 14px 4px}}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
+<div class="mid"><div class="cat">ENCODING & HASHING</div><h1>Weight Converter</h1><p class="desc">Grams, kilograms, pounds and ounces on one line.</p><p class="howto"><b>How to use.</b> Edit any unit's number and the others rebuild; Clear empties all four.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></div>
+<a class="tag" href="../index.html">TOOLBENCH</a></header>
+
+<p>Convert mass and weight measurements between metric, imperial, and apothecary units.</p>
+    </header>
+
+    <div class="card">
+      <div class="grid-inputs">
+        <div class="input-group">
+          <div class="label-row">
+            <label for="kg">Kilograms</label>
+            <span class="unit-tag">kg</span>
+          </div>
+          <input type="number" id="kg" step="any" value="70">
+        </div>
+
+        <div class="input-group">
+          <div class="label-row">
+            <label for="lbs">Pounds</label>
+            <span class="unit-tag">lbs</span>
+          </div>
+          <input type="number" id="lbs" step="any">
+        </div>
+
+        <div class="input-group">
+          <div class="label-row">
+            <label for="grams">Grams</label>
+            <span class="unit-tag">g</span>
+          </div>
+          <input type="number" id="grams" step="any">
+        </div>
+
+        <div class="input-group">
+          <div class="label-row">
+            <label for="oz">Ounces</label>
+            <span class="unit-tag">oz</span>
+          </div>
+          <input type="number" id="oz" step="any">
+        </div>
+
+        <div class="input-group">
+          <div class="label-row">
+            <label for="stones">Stones</label>
+            <span class="unit-tag">st</span>
+          </div>
+          <input type="number" id="stones" step="any">
+        </div>
+
+        <div class="input-group">
+          <div class="label-row">
+            <label for="tonnes">Metric Tons</label>
+            <span class="unit-tag">t</span>
+          </div>
+          <input type="number" id="tonnes" step="any">
+        </div>
+
+        <div class="input-group">
+          <div class="label-row">
+            <label for="mg">Milligrams</label>
+            <span class="unit-tag">mg</span>
+          </div>
+          <input type="number" id="mg" step="any">
+        </div>
+
+        <div class="input-group">
+          <div class="label-row">
+            <label for="carats">Carats</label>
+            <span class="unit-tag">ct</span>
+          </div>
+          <input type="number" id="carats" step="any">
+        </div>
+      </div>
+
+      <div class="breakdown-section">
+        <div class="breakdown-title">Dual Imperial Breakdowns</div>
+        <div class="breakdown-grid">
+          <div class="breakdown-item">
+            <span class="breakdown-label">Stone + Pounds (UK/IRE standard):</span>
+            <span class="breakdown-val" id="stonePounds">11 st 0.35 lbs</span>
+          </div>
+          <div class="breakdown-item">
+            <span class="breakdown-label">Pounds + Ounces (US standard):</span>
+            <span class="breakdown-val" id="poundOunces">154 lbs 5.16 oz</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="presets-title">Weight Benchmarks</div>
+      <div class="presets-grid">
+        <button type="button" class="preset-btn" data-kg="0.001">Feather (1 g)</button>
+        <button type="button" class="preset-btn" data-kg="0.2">Smartphone (200 g)</button>
+        <button type="button" class="preset-btn" data-kg="3.5">Newborn Baby (3.5 kg)</button>
+        <button type="button" class="preset-btn" data-kg="70">Average Adult (70 kg)</button>
+        <button type="button" class="preset-btn" data-kg="1500">Sedan Car (1,500 kg)</button>
+        <button type="button" class="preset-btn" data-kg="5000">Elephant (5,000 kg)</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Base unit: grams (g)
+    const TO_GRAMS = {
+      grams: 1,
+      kg: 1000,
+      mg: 0.001,
+      tonnes: 1000000,
+      lbs: 453.59237,
+      oz: 28.349523125,
+      stones: 6350.29318,
+      carats: 0.2
+    };
+
+    const inputs = {
+      kg: document.getElementById('kg'),
+      lbs: document.getElementById('lbs'),
+      grams: document.getElementById('grams'),
+      oz: document.getElementById('oz'),
+      stones: document.getElementById('stones'),
+      tonnes: document.getElementById('tonnes'),
+      mg: document.getElementById('mg'),
+      carats: document.getElementById('carats')
+    };
+
+    const stonePoundsEl = document.getElementById('stonePounds');
+    const poundOuncesEl = document.getElementById('poundOunces');
+
+    function formatNumber(num) {
+      if (isNaN(num) || !isFinite(num)) return '';
+      if (Math.abs(num) >= 1000000) return num.toExponential(4);
+      if (Math.abs(num) >= 1000) return num.toFixed(2);
+      if (Math.abs(num) >= 1) return num.toFixed(3);
+      if (Math.abs(num) >= 0.0001) return num.toFixed(5);
+      return num.toExponential(4);
+    }
+
+    function updateAllFromBase(baseGrams, sourceKey) {
+      for (const [key, el] of Object.entries(inputs)) {
+        if (key !== sourceKey) {
+          if (isNaN(baseGrams)) {
+            el.value = '';
+          } else {
+            const val = baseGrams / TO_GRAMS[key];
+            el.value = formatNumber(val);
+          }
+        }
+      }
+
+      if (isNaN(baseGrams) || baseGrams < 0) {
+        stonePoundsEl.textContent = '—';
+        poundOuncesEl.textContent = '—';
+      } else {
+        const totalPounds = baseGrams / TO_GRAMS.lbs;
+        // Stone + pounds
+        const st = Math.floor(totalPounds / 14);
+        const remLbs = totalPounds % 14;
+        stonePoundsEl.textContent = `${st} st ${remLbs.toFixed(2)} lbs`;
+
+        // Pound + ounces
+        const wholeLbs = Math.floor(totalPounds);
+        const remOz = (totalPounds - wholeLbs) * 16;
+        poundOuncesEl.textContent = `${wholeLbs} lbs ${remOz.toFixed(2)} oz`;
+      }
+    }
+
+    for (const [key, el] of Object.entries(inputs)) {
+      el.addEventListener('input', () => {
+        const val = parseFloat(el.value);
+        if (isNaN(val)) {
+          updateAllFromBase(NaN, key);
+        } else {
+          const baseGrams = val * TO_GRAMS[key];
+          updateAllFromBase(baseGrams, key);
+        }
+      });
+    }
+
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const kgVal = parseFloat(btn.dataset.kg);
+        inputs.kg.value = kgVal;
+        const baseGrams = kgVal * TO_GRAMS.kg;
+        updateAllFromBase(baseGrams, 'kg');
+      });
+    });
+
+    const initialBase = 70 * TO_GRAMS.kg;
+    updateAllFromBase(initialBase, 'kg');
+  </script>
+</body>
+</html>
+<script>
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!(e.target.closest&&e.target.closest('input,textarea,select'))){location.href='../index.html';}});
+</script>

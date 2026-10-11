@@ -1,0 +1,5 @@
+*.html.orig
+__pycache__/
+*.bak
+orig-backup/
+server.log

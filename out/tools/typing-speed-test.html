@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typing Speed Test</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --accent: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+    }
+
+    .stat-box {
+      background-color: #0b1120;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      text-align: center;
+    }
+
+    .stat-val {
+      font-size: 1.5rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-lbl {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .text-display {
+      background-color: #0b1120;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1.25rem;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 1.2rem;
+      line-height: 1.7;
+      min-height: 140px;
+      user-select: none;
+      word-break: break-word;
+      position: relative;
+    }
+
+    .char {
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+    }
+
+    .char.correct {
+      color: var(--accent);
+    }
+
+    .char.incorrect {
+      color: var(--danger);
+      background-color: rgba(239, 68, 68, 0.2);
+      border-radius: 2px;
+    }
+
+    .char.current {
+      color: var(--text);
+      border-bottom: 2px solid var(--primary);
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { border-color: var(--primary); }
+      50% { border-color: transparent; }
+    }
+
+    .input-container {
+      position: relative;
+    }
+
+    .type-input {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      background-color: #0b1120;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 1.05rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .type-input:focus {
+      border-color: var(--primary);
+    }
+
+    .controls-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .time-selector {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .time-btn {
+      background-color: #0b1120;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.35rem 0.75rem;
+      border-radius: 0.375rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .time-btn.active {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .action-btn {
+      background-color: #0b1120;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.45rem 1.25rem;
+      border-radius: 0.375rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+      background-color: #1e293b;
+      border-color: var(--text-muted);
+    }
+
+    .summary-card {
+      background-color: #0b1120;
+      border: 1px solid var(--accent);
+      border-radius: 0.5rem;
+      padding: 1.25rem;
+      text-align: center;
+      display: none;
+    }
+
+    .summary-card.show {
+      display: block;
+    }
+
+    .summary-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .summary-stats {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 1rem;
+    }
+  
+:root{--tb-acc:#d8a25e}
+header.tb{display:flex;align-items:center;gap:14px;max-width:860px;margin:0 auto;padding:20px 20px 6px}
+header.tb .back{font:600 11px/1 ui-monospace,'Cascadia Mono','SF Mono',Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut,#8f949b);border:1px solid var(--border,#282c32);padding:9px 12px;border-radius:8px;white-space:nowrap}
+header.tb .back:hover{color:var(--text,#ecebe6);border-color:#8f949b}
+header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 ui-monospace,'Cascadia Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#d8a25e}
+header.tb h1{font:400 21px/1.25 Georgia,'Iowan Old Style',serif;margin:4px 0 3px;color:var(--text,#ecebe6)}
+header.tb .desc,header.tb .howto,header.tb .priv{margin:0;font-size:12.5px;color:var(--text-muted,#8f949b)}
+header.tb .howto{margin-top:4px}header.tb .howto b{color:#ecebe6;font-weight:600}
+header.tb .priv{margin-top:4px;font-size:11px;opacity:.75}
+header.tb .tag{font:600 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--mut,#8f949b);text-decoration:none}
+@media(max-width:640px){header.tb{padding:14px 14px 4px}}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
+<div class="mid"><div class="cat">TIME & PRODUCTIVITY</div><h1>Typing Speed Test</h1><p class="desc">WPM and accuracy over 15/30/60 seconds, measured live; restart any time.</p><p class="howto"><b>How to use.</b> The run starts the instant your first letter lands; keep typing until the clock runs out and the result summary appears.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></div>
+<a class="tag" href="../index.html">TOOLBENCH</a></header>
+
+<p>Measure your typing speed (WPM) and accuracy with real-time feedback and passage tests.</p>
+    </header>
+
+    <div class="card">
+      <div class="stats-bar">
+        <div class="stat-box">
+          <div class="stat-val" id="wpmVal" style="color: var(--accent);">0</div>
+          <div class="stat-lbl">WPM</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="accVal" style="color: var(--primary);">100%</div>
+          <div class="stat-lbl">Accuracy</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="timeVal" style="color: var(--warning);">60s</div>
+          <div class="stat-lbl">Time Left</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="charsVal" style="color: var(--text);">0</div>
+          <div class="stat-lbl">Characters</div>
+        </div>
+      </div>
+
+      <div class="text-display" id="textDisplay"></div>
+
+      <div class="input-container">
+        <input type="text" class="type-input" id="typeInput" placeholder="Start typing here..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      </div>
+
+      <div class="controls-row">
+        <div class="time-selector">
+          <span style="font-size: 0.8rem; color: var(--text-muted); margin-right: 0.25rem;">Duration:</span>
+          <button class="time-btn" onclick="setTimeLimit(15)">15s</button>
+          <button class="time-btn" onclick="setTimeLimit(30)">30s</button>
+          <button class="time-btn active" onclick="setTimeLimit(60)">60s</button>
+        </div>
+        <button class="action-btn" onclick="resetTest()">Restart Test</button>
+      </div>
+
+      <div class="summary-card" id="summaryCard">
+        <div class="summary-title">🎉 Test Complete!</div>
+        <p style="color: var(--text-muted); font-size: 0.9rem;" id="summaryMsg">Outstanding effort!</p>
+        <div class="summary-stats">
+          <div><strong style="font-size: 1.5rem; color: var(--accent);" id="finalWpm">0</strong><br><span style="font-size: 0.75rem; color: var(--text-muted);">Net WPM</span></div>
+          <div><strong style="font-size: 1.5rem; color: var(--primary);" id="finalAcc">0%</strong><br><span style="font-size: 0.75rem; color: var(--text-muted);">Accuracy</span></div>
+          <div><strong style="font-size: 1.5rem; color: var(--warning);" id="finalCpm">0</strong><br><span style="font-size: 0.75rem; color: var(--text-muted);">CPM</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const samplePassages = [
+      "The quick brown fox jumps over the lazy dog. Swift algorithms optimize computational graphs while elegant code reduces complexity across software systems.",
+      "In computer science, performance and clarity walk hand in hand. Every instruction executed brings meaningful purpose to data pipelines and human innovation.",
+      "The dawn of computing transformed civilization forever. From simple vacuum tubes to distributed cloud nodes, technology expands human potential each day.",
+      "Writing clean and efficient software requires patience and discipline. Code is written once for machines to execute, but read hundreds of times by engineers.",
+      "Curiosity is the engine of intellectual discovery. When challenges emerge, steady dedication and logical problem solving guide us toward elegant solutions."
+    ];
+
+    let currentPassage = "";
+    let timeLimit = 60;
+    let timeLeft = 60;
+    let timer = null;
+    let isRunning = false;
+    let totalTyped = 0;
+    let correctTyped = 0;
+    let errors = 0;
+
+    const textDisplay = document.getElementById('textDisplay');
+    const typeInput = document.getElementById('typeInput');
+    const wpmVal = document.getElementById('wpmVal');
+    const accVal = document.getElementById('accVal');
+    const timeVal = document.getElementById('timeVal');
+    const charsVal = document.getElementById('charsVal');
+    const summaryCard = document.getElementById('summaryCard');
+    const finalWpm = document.getElementById('finalWpm');
+    const finalAcc = document.getElementById('finalAcc');
+    const finalCpm = document.getElementById('finalCpm');
+
+    function loadPassage() {
+      const idx = Math.floor(Math.random() * samplePassages.length);
+      currentPassage = samplePassages[idx];
+      textDisplay.innerHTML = '';
+      currentPassage.split('').forEach((char, i) => {
+        const span = document.createElement('span');
+        span.className = 'char' + (i === 0 ? ' current' : '');
+        span.textContent = char;
+        textDisplay.appendChild(span);
+      });
+    }
+
+    function setTimeLimit(seconds) {
+      if (isRunning) resetTest();
+      timeLimit = seconds;
+      timeLeft = seconds;
+      timeVal.textContent = `${timeLeft}s`;
+      document.querySelectorAll('.time-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent === `${seconds}s`);
+      });
+    }
+
+    function startTimer() {
+      isRunning = true;
+      timer = setInterval(() => {
+        timeLeft--;
+        timeVal.textContent = `${timeLeft}s`;
+        updateMetrics();
+
+        if (timeLeft <= 0) {
+          endTest();
+        }
+      }, 1000);
+    }
+
+    function updateMetrics() {
+      const elapsedSeconds = timeLimit - timeLeft;
+      const minutes = elapsedSeconds > 0 ? elapsedSeconds / 60 : 0.01;
+      const words = correctTyped / 5;
+      const wpm = Math.max(0, Math.round(words / minutes));
+      const accuracy = totalTyped > 0 ? Math.round((correctTyped / totalTyped) * 100) : 100;
+
+      wpmVal.textContent = wpm;
+      accVal.textContent = `${accuracy}%`;
+      charsVal.textContent = totalTyped;
+    }
+
+    typeInput.addEventListener('input', (e) => {
+      if (!isRunning && typeInput.value.length > 0) {
+        startTimer();
+      }
+
+      const inputVal = typeInput.value;
+      const spans = textDisplay.querySelectorAll('.char');
+
+      totalTyped = inputVal.length;
+      correctTyped = 0;
+      errors = 0;
+
+      spans.forEach((span, idx) => {
+        span.className = 'char';
+        if (idx < inputVal.length) {
+          if (inputVal[idx] === currentPassage[idx]) {
+            span.classList.add('correct');
+            correctTyped++;
+          } else {
+            span.classList.add('incorrect');
+            errors++;
+          }
+        } else if (idx === inputVal.length) {
+          span.classList.add('current');
+        }
+      });
+
+      updateMetrics();
+
+      if (inputVal.length >= currentPassage.length) {
+        endTest();
+      }
+    });
+
+    function endTest() {
+      clearInterval(timer);
+      isRunning = false;
+      typeInput.disabled = true;
+
+      const elapsedSeconds = Math.max(1, timeLimit - timeLeft);
+      const minutes = elapsedSeconds / 60;
+      const wpm = Math.max(0, Math.round((correctTyped / 5) / minutes));
+      const accuracy = totalTyped > 0 ? Math.round((correctTyped / totalTyped) * 100) : 100;
+      const cpm = Math.round(correctTyped / minutes);
+
+      finalWpm.textContent = wpm;
+      finalAcc.textContent = `${accuracy}%`;
+      finalCpm.textContent = cpm;
+      summaryCard.classList.add('show');
+    }
+
+    function resetTest() {
+      clearInterval(timer);
+      isRunning = false;
+      timeLeft = timeLimit;
+      totalTyped = 0;
+      correctTyped = 0;
+      errors = 0;
+
+      typeInput.disabled = false;
+      typeInput.value = '';
+      wpmVal.textContent = '0';
+      accVal.textContent = '100%';
+      timeVal.textContent = `${timeLimit}s`;
+      charsVal.textContent = '0';
+      summaryCard.classList.remove('show');
+
+      loadPassage();
+      typeInput.focus();
+    }
+
+    loadPassage();
+    typeInput.focus();
+  </script>
+</body>
+</html>
+<script>
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!(e.target.closest&&e.target.closest('input,textarea,select'))){location.href='../index.html';}});
+</script>
