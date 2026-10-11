@@ -196,6 +196,7 @@ M.update({
   "Edit the source and the preview re-renders as you type; swap the panes with the ↑↓ buttons."),
 "monte-carlo": ("Math & Finance", "Monte-Carlo Odds Simulator", "Flip a coin / roll dice / pick a box thousands of times — probability as it happens, in a chart.",
   "Pick a mode, edit any field (or press Sample), then Run and read the verdict under the chart; Clear empties it."),
+"nato_phonetic_translator": (M["nato-phonetic-translator"] if False else ("Text", "Nato Phonetic Translator", "Text to Alpha-Bravo over the full ICAO alphabet (digits included); reverse mode folds a code phrase back to text.", "Pick a direction, type or use Sample, hit Translate; Clear empties the box.")),
 "nato-phonetic-translator": ("Text", "NATO Phonetic Translator", "Text → Alpha-Bravo over the full ICAO alphabet, digits included; reverse mode folds a code phrase back to text.",
   "Pick a direction, type or use Sample, hit Translate; Clear empties the box."),
 "palindrome-checker": ("Text", "Palindrome Checker", "Checks words, phrases and numbers, ignoring punctuation and spacing.",
