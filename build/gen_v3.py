@@ -58,8 +58,8 @@ SPEC_SINGLETONS = {
     "cron-explainer.html": "spec",          # tools_dev + tools_extra_b
     # -/_ filename twins (the deployed file serves the job under the twin key):
     "text-diff.html": "spec",               # twin kept of text-diff-viewer (LCS + markers)
-    "query-lab.html": "spec",               # kept per Soham (query-lab + query-builder pair)
-    "cron-scheduler.html": "spec",          # cron-next-runs, complements cron explainer
+    "query-lab.html": "spec",
+    "cron-scheduler.html": "spec",
     "percentage-lab.html": "spec",
     "fraction-calc.html": "spec",
     "emi-lite.html": "spec",
@@ -76,14 +76,17 @@ SPEC_SINGLETONS = {
     "pomodoro-timer2.html": "spec",
     "slug-generator.html": "spec",          # 5 flavours + dedupe column (spec) beats ported twin
     "uuid-generator.html": "spec",          # crypto v4 x10 (spec) beats ported twin
-    "regex-tester.html": "spec",            # live flags + colour-by-category (spec) beats ported grep twin? SEE NOTE
+    "query-lab.html": "spec",
     # (SPEC_SINGLETONS = names that MUST render from spec modules, one instance;
     #  names the original v2 build CUT are NOT here — they stay cut, nothing
     #  resurrects silently.)
 }
 # the ONLY two ported files the spec version beats (reversed 2026-10-17 after
 # manual review — "don't re-add identical duplicates": one entry per job):
-PORTED_LOSERS = {"grep.html", "regex-tester.html"}
+# (regex-tester is KEPT — its job is testing patterns; the ported grep twin
+# filters lines through a regex. Different verbs, different pages. Cut both
+# once and the suite lost its only pattern tester.)
+PORTED_LOSERS = {"grep.html"}
 
 # ---- category + copy helpers (single source: desc_map, then heuristic) ----
 def key_for(stem):
