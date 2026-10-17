@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Case Converter · Toolbench</title>
+<style>
+:root{--bg:#0e0f11;--panel:#15171a;--panel2:#1b1e22;--line:#282c32;--ink:#ecebe6;--mut:#8f949b;
+--acc:#d8a25e;--mono:ui-monospace,'Cascadia Mono','JetBrains Mono','SF Mono',Consolas,monospace;
+--sans:ui-sans-serif,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+--serif:Georgia,'Iowan Old Style','Times New Roman',serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 var(--sans)}
+a{color:inherit}header.tb{display:flex;align-items:center;gap:16px;max-width:780px;margin:0 auto;padding:22px 20px 14px}
+header.tb .back{font:600 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut);border:1px solid var(--line);padding:9px 12px;border-radius:8px;white-space:nowrap;transition:color .15s,border-color .15s}
+header.tb .back:hover{color:var(--ink);border-color:var(--mut)}
+header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+header.tb h1{font:400 21px/1.25 var(--serif);margin:4px 0 3px}
+header.tb .desc{margin:0;font-size:12.5px;color:var(--mut)}
+header.tb .tag{font:600 10px/1 var(--mono);letter-spacing:.14em;color:var(--mut);text-decoration:none}
+main{max-width:780px;margin:0 auto;padding:6px 20px 56px}
+section.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.fld{display:flex;flex-direction:column;gap:5px;min-width:0}.fld.grow{flex:1 1 220px}
+label{font:600 10.5px/1.2 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--mut)}
+input,select,textarea{background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:9px 11px;font:13px/1.4 var(--mono);width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 18%,transparent)}
+textarea{min-height:130px;resize:vertical}
+button{background:var(--acc);color:#101214;font:700 11.5px/1 var(--sans);letter-spacing:.07em;text-transform:uppercase;padding:11px 15px;border-radius:8px;border:0;cursor:pointer;transition:filter .15s}
+button:hover{filter:brightness(1.12)}button.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+#out{white-space:pre-wrap;word-break:break-word;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;font:13px/1.65 var(--mono);min-height:52px;margin-top:14px}
+#out:empty::before{content:'—';color:var(--mut)}
+.hint{font-size:12px;color:var(--mut);margin:0 0 12px}
+.hint b{color:var(--ink);font-weight:600}
+.priv{font-size:11px;color:var(--mut);opacity:.8;margin:14px 0 0}
+@media (max-width:640px){header.tb{padding:16px 14px 10px}main{padding:4px 14px 40px}.row{flex-direction:column}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style></head><body>
+<header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
+<div class="mid"><div class="cat">Text</div><h1>Case Converter</h1><p class="desc">UPPER, lower, Title, Sentence, camelCase, PascalCase, snake_case, kebab-case, aLtErNaTiNg.</p></div>
+<a class="tag" href="../index.html">TOOLBENCH</a></header>
+<main><section class="card"><div class="row"><div class="fld"><label for="m">Case</label><select id="m"><option value="upper">UPPER</option><option value="lower" selected>lower</option><option value="title">Title Case</option><option value="sentence">Sentence case</option><option value="camel">camelCase</option><option value="pascal">PascalCase</option><option value="snake">snake_case</option><option value="kebab">kebab-case</option><option value="alt">aLtErNaTiNg</option></select></div></div><div class="fld grow"><label for="ta">Text</label><textarea id="ta" ></textarea></div><div class="row" style="margin-top:12px"><div class="row"><button data-act="convert">Convert</button><button data-act="copy">Copy</button></div></div><div id="out"></div></section><p class="hint"><b>How to use.</b> Paste or type in the top box and click a case button; empty input falls back to a sample line.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></main>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const V=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};
+const OUT=h=>{const o=document.getElementById('out');if(o)o.innerHTML=h;};
+const fmt=(n,d=6)=>{if(n===null||n===undefined||!isFinite(n))return '\u2014';return (+n).toLocaleString('en-US',{maximumFractionDigits:d});};
+const wire=ids=>(Array.isArray(ids)?ids:[ids]).forEach(i=>{const e=document.getElementById(i);if(e)e.addEventListener('input',()=>window.run&&window.run());});
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+const act=(b.dataset.act||'').toLowerCase();
+if(act==='copy'){if(navigator.clipboard&&navigator.clipboard.writeText){const t=document.getElementById('out').innerText;navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent='Copied ✓';setTimeout(()=>b.textContent=o,900)})}return}
+if(window.run)run();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!(e.target.closest&&e.target.closest('input,textarea,select'))){location.href='../index.html';}});
+const isL=c=>/[a-zà-ÿ]/.test(c);
+function run(){const t=V('ta')||'';const m=V('m');const W=t.match(/[^\s_-]+|[\s_-]+/g)||[];let o='';
+if(m==='upper')o=t.toUpperCase();
+else if(m==='lower')o=t.toLowerCase();
+else if(m==='title')o=t.replace(/([^\s]+)/g,x=>x[0].toUpperCase()+x.slice(1).toLowerCase());
+else if(m==='sentence')o=(t[0]||'').toUpperCase()+t.slice(1).toLowerCase();
+else if(m==='alt')o=[...t].map((c,i)=>i%2?c.toUpperCase():c.toLowerCase()).join('');
+else{const w=t.replace(/([a-z])([A-Z])/g,'$1 $2').split(/[\s_-]+/).filter(Boolean).map(x=>x[0].toUpperCase()+x.slice(1).toLowerCase());
+if(m==='camel')o=w.map(x=>x[0].toLowerCase()+x.slice(1)).join('');
+else if(m==='pascal')o=w.join('');else if(m==='snake')o=w.join('_').toLowerCase();else if(m==='kebab')o=w.join('-').toLowerCase()}
+OUT(o||'\u2014')}
+if(!V('ta')){$('#ta').value="hello World from ToolBench"}run();wire(['m','ta']);
+</script>
+</body></html>

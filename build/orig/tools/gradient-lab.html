@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gradient Lab · Toolbench</title>
+<style>
+:root{--bg:#0e0f11;--panel:#15171a;--panel2:#1b1e22;--line:#282c32;--ink:#ecebe6;--mut:#8f949b;
+--acc:#e0736b;--mono:ui-monospace,'Cascadia Mono','JetBrains Mono','SF Mono',Consolas,monospace;
+--sans:ui-sans-serif,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+--serif:Georgia,'Iowan Old Style','Times New Roman',serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 var(--sans)}
+a{color:inherit}header.tb{display:flex;align-items:center;gap:16px;max-width:780px;margin:0 auto;padding:22px 20px 14px}
+header.tb .back{font:600 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut);border:1px solid var(--line);padding:9px 12px;border-radius:8px;white-space:nowrap;transition:color .15s,border-color .15s}
+header.tb .back:hover{color:var(--ink);border-color:var(--mut)}
+header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+header.tb h1{font:400 21px/1.25 var(--serif);margin:4px 0 3px}
+header.tb .desc{margin:0;font-size:12.5px;color:var(--mut)}
+header.tb .tag{font:600 10px/1 var(--mono);letter-spacing:.14em;color:var(--mut);text-decoration:none}
+main{max-width:780px;margin:0 auto;padding:6px 20px 56px}
+section.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.fld{display:flex;flex-direction:column;gap:5px;min-width:0}.fld.grow{flex:1 1 220px}
+label{font:600 10.5px/1.2 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--mut)}
+input,select,textarea{background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:9px 11px;font:13px/1.4 var(--mono);width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 18%,transparent)}
+textarea{min-height:130px;resize:vertical}
+button{background:var(--acc);color:#101214;font:700 11.5px/1 var(--sans);letter-spacing:.07em;text-transform:uppercase;padding:11px 15px;border-radius:8px;border:0;cursor:pointer;transition:filter .15s}
+button:hover{filter:brightness(1.12)}button.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+#out{white-space:pre-wrap;word-break:break-word;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;font:13px/1.65 var(--mono);min-height:52px;margin-top:14px}
+#out:empty::before{content:'—';color:var(--mut)}
+.hint{font-size:12px;color:var(--mut);margin:0 0 12px}
+.hint b{color:var(--ink);font-weight:600}
+.priv{font-size:11px;color:var(--mut);opacity:.8;margin:14px 0 0}
+@media (max-width:640px){header.tb{padding:16px 14px 10px}main{padding:4px 14px 40px}.row{flex-direction:column}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style></head><body>
+<header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
+<div class="mid"><div class="cat">Color</div><h1>Gradient Lab</h1><p class="desc">Mix linear or radial gradients from any two colours — drag the stop slider or just type.</p></div>
+<a class="tag" href="../index.html">TOOLBENCH</a></header>
+<main><div class="row"><div class="fld grow"><label for="c1">From</label><input id="c1" type="text" type="color" value="#d8a25e"></div><div class="fld grow"><label for="c2">To</label><input id="c2" type="text" type="color" value="#6fb3d2"></div><div class="fld grow"><label for="ang">Angle (deg)</label><input id="ang" type="text" value="90"></div></div><div id="grad" style="height:120px;border-radius:10px;border:1px solid var(--line)"></div><div class="row"><button data-act="generate">Generate</button><button data-act="copy">Copy</button></div><div id="out"></div><p class="hint"><b>How to use.</b> Move the stop slider or change either hex; click the preview or the CSS line to copy the gradient.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></main>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const V=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};
+const OUT=h=>{const o=document.getElementById('out');if(o)o.innerHTML=h;};
+const fmt=(n,d=6)=>{if(n===null||n===undefined||!isFinite(n))return '\u2014';return (+n).toLocaleString('en-US',{maximumFractionDigits:d});};
+const wire=ids=>(Array.isArray(ids)?ids:[ids]).forEach(i=>{const e=document.getElementById(i);if(e)e.addEventListener('input',()=>window.run&&window.run());});
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+const act=(b.dataset.act||'').toLowerCase();
+if(act==='copy'){if(navigator.clipboard&&navigator.clipboard.writeText){const t=document.getElementById('out').innerText;navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent='Copied ✓';setTimeout(()=>b.textContent=o,900)})}return}
+if(window.run)run();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!(e.target.closest&&e.target.closest('input,textarea,select'))){location.href='../index.html';}});
+function run(){const a=V('c1'),b=V('c2'),an=parseFloat(V('ang'))||90;
+document.getElementById('grad').style.background='linear-gradient('+an+'deg,'+a+','+b+')';
+OUT('background: linear-gradient('+an+'deg, '+a+', '+b+');');}
+wire(['c1','c2','ang']);run();
+</script>
+</body></html>

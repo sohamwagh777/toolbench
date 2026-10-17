@@ -36,7 +36,7 @@ button:hover{filter:brightness(1.12)}button.ghost{background:var(--panel2);color
 <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
 <div class="mid"><div class="cat">Developer</div><h1>JWT Decoder</h1><p class="desc">Split a JWT, decode header + payload, flag expired exp claims. Local only — nothing is sent.</p></div>
 <a class="tag" href="../index.html">TOOLBENCH</a></header>
-<main><section class="card"><p class="hint">Paste a token to decode its header and claims.</p><div class="fld grow"><label for="ta">Token</label><textarea id="ta" ></textarea></div><div class="row" style="margin-top:12px"><div class="row"><button data-act="decode">Decode</button><button data-act="copy">Copy</button></div></div><div id="out"></div></section><p class="hint"><b>How to use.</b> Paste a token (Sample fills one), pick Decode/Encode and go; the payload editor stays live.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></main>
+<main><section class="card"><p class="hint">Paste a token to decode its header and claims.</p><div class="fld grow"><label for="ta">Token</label><textarea id="ta" ></textarea></div><div class="row" style="margin-top:12px"><div class="row"><button data-act="decode">Decode</button><button data-act="copy">Copy</button></div></div><div id="out"></div></section><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></main>
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const V=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};

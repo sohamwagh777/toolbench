@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reaction Time Tester</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --accent: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 640px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .click-area {
+      width: 100%;
+      height: 320px;
+      border-radius: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.15s ease, transform 0.05s ease;
+      text-align: center;
+      padding: 2rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    }
+
+    .click-area:active {
+      transform: scale(0.99);
+    }
+
+    /* State colors */
+    .state-idle {
+      background-color: #2563eb;
+    }
+
+    .state-waiting {
+      background-color: #dc2626;
+    }
+
+    .state-ready {
+      background-color: #16a34a;
+    }
+
+    .state-early {
+      background-color: #d97706;
+    }
+
+    .state-result {
+      background-color: #4f46e5;
+    }
+
+    .area-icon {
+      font-size: 3rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .area-title {
+      font-size: 2.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .area-subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .stat-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .stat-val {
+      font-size: 1.75rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-lbl {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .history-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .history-header h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .clear-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      text-decoration: underline;
+    }
+
+    .clear-btn:hover {
+      color: var(--danger);
+    }
+
+    .history-list {
+      max-height: 200px;
+      overflow-y: auto;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #0b1120;
+      padding: 0.6rem 0.85rem;
+      border-radius: 0.375rem;
+      font-size: 0.9rem;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 9999px;
+    }
+
+    .badge-godlike { background-color: #059669; color: #fff; }
+    .badge-fast { background-color: #0284c7; color: #fff; }
+    .badge-normal { background-color: #d97706; color: #fff; }
+    .badge-slow { background-color: #e11d48; color: #fff; }
+
+    .empty-state {
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+  
+:root{--tb-acc:#d8a25e}
+header.tb{display:flex;align-items:center;gap:14px;max-width:860px;margin:0 auto;padding:20px 20px 6px}
+header.tb .back{font:600 11px/1 ui-monospace,'Cascadia Mono','SF Mono',Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut,#8f949b);border:1px solid var(--border,#282c32);padding:9px 12px;border-radius:8px;white-space:nowrap}
+header.tb .back:hover{color:var(--text,#ecebe6);border-color:#8f949b}
+header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 ui-monospace,'Cascadia Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#d8a25e}
+header.tb h1{font:400 21px/1.25 Georgia,'Iowan Old Style',serif;margin:4px 0 3px;color:var(--text,#ecebe6)}
+header.tb .desc,header.tb .howto,header.tb .priv{margin:0;font-size:12.5px;color:var(--text-muted,#8f949b)}
+header.tb .howto{margin-top:4px}header.tb .howto b{color:#ecebe6;font-weight:600}
+header.tb .priv{margin-top:4px;font-size:11px;opacity:.75}
+header.tb .tag{font:600 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--mut,#8f949b);text-decoration:none}
+@media(max-width:640px){header.tb{padding:14px 14px 4px}}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
+<div class="mid"><div class="cat">TIME & PRODUCTIVITY</div><h1>Reaction Time Tester</h1><p class="desc">Click when the box turns green. Fake-out: it sometimes turns green and back to red — don't jump the gun.</p><p class="howto"><b>How to use.</b> Wait for green, then click anywhere on the box as fast as you can; Best/Last and an error flag appear on the board.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></div>
+<a class="tag" href="../index.html">TOOLBENCH</a></header>
+
+<p>Benchmark your visual reaction speed and reflexes with millisecond precision.</p>
+    </header>
+
+    <div class="click-area state-idle" id="clickArea" onclick="handleClickArea()">
+      <div class="area-icon" id="areaIcon">⚡</div>
+      <div class="area-title" id="areaTitle">Click to Start</div>
+      <div class="area-subtitle" id="areaSubtitle">Click anywhere when you are ready</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-val" id="currentScore" style="color: var(--primary);">--</div>
+        <div class="stat-lbl">Last Try</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="averageScore" style="color: var(--accent);">--</div>
+        <div class="stat-lbl">Average</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="bestScore" style="color: #a855f7;">--</div>
+        <div class="stat-lbl">Best Score</div>
+      </div>
+    </div>
+
+    <div class="history-card">
+      <div class="history-header">
+        <h2>Attempt History</h2>
+        <button class="clear-btn" onclick="clearHistory()">Reset History</button>
+      </div>
+      <ul class="history-list" id="historyList">
+        <li class="empty-state">No attempts recorded yet. Click above to begin!</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const clickArea = document.getElementById('clickArea');
+    const areaIcon = document.getElementById('areaIcon');
+    const areaTitle = document.getElementById('areaTitle');
+    const areaSubtitle = document.getElementById('areaSubtitle');
+    const currentScore = document.getElementById('currentScore');
+    const averageScore = document.getElementById('averageScore');
+    const bestScore = document.getElementById('bestScore');
+    const historyList = document.getElementById('historyList');
+
+    // States: 'idle', 'waiting', 'ready', 'early', 'result'
+    let state = 'idle';
+    let waitTimer = null;
+    let startTime = 0;
+    let scores = [];
+
+    function setState(newState, title, subtitle, icon) {
+      clickArea.className = `click-area state-${newState}`;
+      state = newState;
+      areaTitle.textContent = title;
+      areaSubtitle.textContent = subtitle;
+      areaIcon.textContent = icon;
+    }
+
+    function handleClickArea() {
+      if (state === 'idle' || state === 'early' || state === 'result') {
+        startWaiting();
+      } else if (state === 'waiting') {
+        // Clicked too early
+        clearTimeout(waitTimer);
+        setState('early', 'Too Soon!', 'You clicked before it turned green. Click to try again.', '⚠️');
+      } else if (state === 'ready') {
+        // Valid reaction
+        const reactionTime = Math.round(performance.now() - startTime);
+        recordScore(reactionTime);
+        const rating = getRating(reactionTime);
+        setState('result', `${reactionTime} ms`, `${rating.label}. Click to try again.`, '🎯');
+      }
+    }
+
+    function startWaiting() {
+      setState('waiting', 'Wait for green...', 'Keep your finger steady!', '⏳');
+      const delay = Math.floor(Math.random() * 3200) + 1500; // 1.5s - 4.7s
+      waitTimer = setTimeout(() => {
+        startTime = performance.now();
+        setState('ready', 'CLICK NOW!', 'Click as fast as you can!', '🟢');
+      }, delay);
+    }
+
+    function getRating(ms) {
+      if (ms < 200) return { label: 'Inhuman Reflexes!', badge: 'badge-godlike' };
+      if (ms < 250) return { label: 'Fast Reflexes', badge: 'badge-fast' };
+      if (ms < 350) return { label: 'Average Reaction', badge: 'badge-normal' };
+      return { label: 'A Bit Slow', badge: 'badge-slow' };
+    }
+
+    function recordScore(ms) {
+      scores.push(ms);
+      currentScore.textContent = `${ms} ms`;
+
+      const sum = scores.reduce((a, b) => a + b, 0);
+      const avg = Math.round(sum / scores.length);
+      averageScore.textContent = `${avg} ms`;
+
+      const best = Math.min(...scores);
+      bestScore.textContent = `${best} ms`;
+
+      renderHistory();
+    }
+
+    function renderHistory() {
+      historyList.innerHTML = '';
+      if (scores.length === 0) {
+        historyList.innerHTML = '<li class="empty-state">No attempts recorded yet. Click above to begin!</li>';
+        return;
+      }
+
+      [...scores].reverse().forEach((score, idx) => {
+        const attemptNum = scores.length - idx;
+        const rating = getRating(score);
+        const li = document.createElement('li');
+        li.className = 'history-item';
+        li.innerHTML = `
+          <span>Attempt #${attemptNum}</span>
+          <span style="font-weight: 700; font-family: monospace;">${score} ms</span>
+          <span class="badge ${rating.badge}">${rating.label}</span>
+        `;
+        historyList.appendChild(li);
+      });
+    }
+
+    function clearHistory() {
+      scores = [];
+      currentScore.textContent = '--';
+      averageScore.textContent = '--';
+      bestScore.textContent = '--';
+      renderHistory();
+      if (state !== 'waiting') {
+        setState('idle', 'Click to Start', 'Click anywhere when you are ready', '⚡');
+      }
+    }
+  </script>
+</body>
+</html>
+<script>
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!(e.target.closest&&e.target.closest('input,textarea,select'))){location.href='../index.html';}});
+</script>

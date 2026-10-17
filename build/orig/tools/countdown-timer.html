@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Countdown Timer</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --accent: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 580px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-container {
+      position: relative;
+      width: 260px;
+      height: 260px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .progress-ring {
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
+
+    .progress-ring-bg {
+      stroke: var(--border);
+      stroke-width: 10;
+      fill: transparent;
+    }
+
+    .progress-ring-circle {
+      stroke: var(--primary);
+      stroke-width: 10;
+      stroke-linecap: round;
+      fill: transparent;
+      stroke-dasharray: 754;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 0.3s ease, stroke 0.3s ease;
+    }
+
+    .time-display {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .digits {
+      font-size: 3rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.03em;
+    }
+
+    .status-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 0.25rem;
+    }
+
+    .input-section {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .input-group label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .input-group input {
+      width: 72px;
+      padding: 0.5rem;
+      background-color: #0b1120;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      color: var(--text);
+      font-size: 1.35rem;
+      font-weight: 600;
+      text-align: center;
+      outline: none;
+    }
+
+    .input-group input:focus {
+      border-color: var(--primary);
+    }
+
+    .colon {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-top: 1.25rem;
+    }
+
+    .presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .preset-btn {
+      background-color: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .preset-btn:hover {
+      border-color: var(--primary);
+      color: var(--text);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.75rem;
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    button.btn {
+      padding: 0.65rem 1.5rem;
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: #0f172a;
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background-color: #1e293b;
+      border-color: var(--text-muted);
+    }
+
+    .btn-danger {
+      background-color: var(--danger);
+      color: #fff;
+    }
+
+    .btn-danger:hover {
+      opacity: 0.9;
+    }
+
+    .alarm-active .digits {
+      color: var(--danger);
+      animation: pulse 1s infinite;
+    }
+
+    .alarm-active .progress-ring-circle {
+      stroke: var(--danger);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.05); }
+    }
+  
+:root{--tb-acc:#d8a25e}
+header.tb{display:flex;align-items:center;gap:14px;max-width:860px;margin:0 auto;padding:20px 20px 6px}
+header.tb .back{font:600 11px/1 ui-monospace,'Cascadia Mono','SF Mono',Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut,#8f949b);border:1px solid var(--border,#282c32);padding:9px 12px;border-radius:8px;white-space:nowrap}
+header.tb .back:hover{color:var(--text,#ecebe6);border-color:#8f949b}
+header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 ui-monospace,'Cascadia Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#d8a25e}
+header.tb h1{font:400 21px/1.25 Georgia,'Iowan Old Style',serif;margin:4px 0 3px;color:var(--text,#ecebe6)}
+header.tb .desc,header.tb .howto,header.tb .priv{margin:0;font-size:12.5px;color:var(--text-muted,#8f949b)}
+header.tb .howto{margin-top:4px}header.tb .howto b{color:#ecebe6;font-weight:600}
+header.tb .priv{margin-top:4px;font-size:11px;opacity:.75}
+header.tb .tag{font:600 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--mut,#8f949b);text-decoration:none}
+@media(max-width:640px){header.tb{padding:14px 14px 4px}}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
+<div class="mid"><div class="cat">TIME & PRODUCTIVITY</div><h1>Countdown Timer</h1><p class="desc">Full-screen countdown for pomodoros, games or speeches; pauses on tab-switch (Visibility API).</p><p class="howto"><b>How to use.</b> Adjust minutes (presets work too) and press Space to start, pause or reset; switch browser tabs and the clock pauses automatically.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></div>
+<a class="tag" href="../index.html">TOOLBENCH</a></header>
+
+<p>A customizable countdown timer with audio alerts and visual progress tracking.</p>
+    </header>
+
+    <div class="card" id="timerCard">
+      <div class="progress-container">
+        <svg class="progress-ring" width="260" height="260">
+          <circle class="progress-ring-bg" cx="130" cy="130" r="120"></circle>
+          <circle class="progress-ring-circle" id="progressRing" cx="130" cy="130" r="120"></circle>
+        </svg>
+        <div class="time-display">
+          <div class="digits" id="digits">05:00</div>
+          <div class="status-text" id="statusText">Ready</div>
+        </div>
+      </div>
+
+      <div class="input-section" id="inputSection">
+        <div class="input-group">
+          <label>Hours</label>
+          <input type="number" id="inputHours" min="0" max="99" value="0">
+        </div>
+        <span class="colon">:</span>
+        <div class="input-group">
+          <label>Minutes</label>
+          <input type="number" id="inputMinutes" min="0" max="59" value="5">
+        </div>
+        <span class="colon">:</span>
+        <div class="input-group">
+          <label>Seconds</label>
+          <input type="number" id="inputSeconds" min="0" max="59" value="0">
+        </div>
+      </div>
+
+      <div class="presets">
+        <button class="preset-btn" onclick="setPreset(1, 0)">1 min</button>
+        <button class="preset-btn" onclick="setPreset(5, 0)">5 min</button>
+        <button class="preset-btn" onclick="setPreset(10, 0)">10 min</button>
+        <button class="preset-btn" onclick="setPreset(15, 0)">15 min</button>
+        <button class="preset-btn" onclick="setPreset(25, 0)">25 min</button>
+        <button class="preset-btn" onclick="setPreset(60, 0)">1 hr</button>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" id="startBtn" onclick="toggleStart()">Start</button>
+        <button class="btn btn-secondary" onclick="addTime(60)">+1 Min</button>
+        <button class="btn btn-secondary" onclick="resetTimer()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const circumference = 2 * Math.PI * 120; // ~753.98
+    const progressRing = document.getElementById('progressRing');
+    const digits = document.getElementById('digits');
+    const statusText = document.getElementById('statusText');
+    const startBtn = document.getElementById('startBtn');
+    const inputSection = document.getElementById('inputSection');
+    const timerCard = document.getElementById('timerCard');
+
+    let totalDuration = 300;
+    let remainingSeconds = 300;
+    let timerInterval = null;
+    let isRunning = false;
+    let isAlarming = false;
+    let alarmInterval = null;
+
+    progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
+    progressRing.style.strokeDashoffset = 0;
+
+    function formatTime(secs) {
+      const h = Math.floor(secs / 3600);
+      const m = Math.floor((secs % 3600) / 60);
+      const s = secs % 60;
+      if (h > 0) {
+        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      }
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function updateDisplay() {
+      digits.textContent = formatTime(remainingSeconds);
+      const percent = totalDuration > 0 ? remainingSeconds / totalDuration : 0;
+      const offset = circumference - (percent * circumference);
+      progressRing.style.strokeDashoffset = offset;
+      if (isRunning) {
+        document.title = `(${formatTime(remainingSeconds)}) Countdown Timer`;
+      } else {
+        document.title = 'Countdown Timer';
+      }
+    }
+
+    function readInputs() {
+      const h = parseInt(document.getElementById('inputHours').value, 10) || 0;
+      const m = parseInt(document.getElementById('inputMinutes').value, 10) || 0;
+      const s = parseInt(document.getElementById('inputSeconds').value, 10) || 0;
+      return (h * 3600) + (m * 60) + s;
+    }
+
+    function setPreset(mins, secs) {
+      if (isRunning) pauseTimer();
+      stopAlarm();
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      document.getElementById('inputHours').value = h;
+      document.getElementById('inputMinutes').value = m;
+      document.getElementById('inputSeconds').value = secs;
+      totalDuration = (h * 3600) + (m * 60) + secs;
+      remainingSeconds = totalDuration;
+      statusText.textContent = 'Ready';
+      updateDisplay();
+    }
+
+    function toggleStart() {
+      if (isAlarming) {
+        stopAlarm();
+        resetTimer();
+        return;
+      }
+      if (isRunning) {
+        pauseTimer();
+      } else {
+        startTimer();
+      }
+    }
+
+    function startTimer() {
+      if (remainingSeconds <= 0) {
+        totalDuration = readInputs();
+        remainingSeconds = totalDuration;
+      }
+      if (remainingSeconds <= 0) return;
+
+      isRunning = true;
+      startBtn.textContent = 'Pause';
+      startBtn.className = 'btn btn-secondary';
+      statusText.textContent = 'Counting Down';
+      inputSection.style.display = 'none';
+
+      timerInterval = setInterval(() => {
+        remainingSeconds--;
+        updateDisplay();
+        if (remainingSeconds <= 0) {
+          clearInterval(timerInterval);
+          isRunning = false;
+          onFinished();
+        }
+      }, 1000);
+      updateDisplay();
+    }
+
+    function pauseTimer() {
+      isRunning = false;
+      clearInterval(timerInterval);
+      startBtn.textContent = 'Resume';
+      startBtn.className = 'btn btn-primary';
+      statusText.textContent = 'Paused';
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      stopAlarm();
+      isRunning = false;
+      startBtn.textContent = 'Start';
+      startBtn.className = 'btn btn-primary';
+      statusText.textContent = 'Ready';
+      inputSection.style.display = 'flex';
+      totalDuration = readInputs() || 300;
+      remainingSeconds = totalDuration;
+      updateDisplay();
+    }
+
+    function addTime(secs) {
+      remainingSeconds += secs;
+      totalDuration = Math.max(totalDuration, remainingSeconds);
+      updateDisplay();
+    }
+
+    function playBeepTone(freq = 880, duration = 0.18) {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function onFinished() {
+      isAlarming = true;
+      timerCard.classList.add('alarm-active');
+      statusText.textContent = "Time's Up!";
+      startBtn.textContent = 'Dismiss';
+      startBtn.className = 'btn btn-danger';
+      playBeepTone(880, 0.25);
+      alarmInterval = setInterval(() => {
+        playBeepTone(987, 0.2);
+        setTimeout(() => playBeepTone(880, 0.2), 220);
+      }, 900);
+    }
+
+    function stopAlarm() {
+      isAlarming = false;
+      timerCard.classList.remove('alarm-active');
+      if (alarmInterval) clearInterval(alarmInterval);
+    }
+
+    document.querySelectorAll('#inputSection input').forEach(input => {
+      input.addEventListener('change', () => {
+        if (!isRunning) {
+          totalDuration = readInputs();
+          remainingSeconds = totalDuration;
+          updateDisplay();
+        }
+      });
+    });
+
+    updateDisplay();
+  </script>
+</body>
+</html>
+<script>
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!(e.target.closest&&e.target.closest('input,textarea,select'))){location.href='../index.html';}});
+</script>

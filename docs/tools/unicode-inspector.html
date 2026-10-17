@@ -34,9 +34,9 @@ button:hover{filter:brightness(1.12)}button.ghost{background:var(--panel2);color
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style></head><body>
 <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
-<div class="mid"><div class="cat">Text</div><h1>Unicode Inspector</h1><p class="desc">Per-codepoint inspection with Unicode block names — NFKC folding for letters and accents, emoji clusters kept whole.</p></div>
+<div class="mid"><div class="cat">Text</div><h1>Unicode Inspector</h1><p class="desc">Per-codepoint U+… inspection with names for common blocks, emoji clusters kept whole.</p></div>
 <a class="tag" href="../index.html">TOOLBENCH</a></header>
-<main><section class="card"><div class="fld grow"><label for="ta">Text</label><textarea id="ta" ></textarea></div><div class="row" style="margin-top:12px"><div class="row"><button data-act="inspect">Inspect</button><button data-act="copy">Copy</button></div></div><div id="out"></div></section><p class="hint"><b>How to use.</b> Edit the Input box and the table rebuilds live (250 ms debounce); paste emoji to see ZWJ and skin-tone clusters parsed correctly.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></main>
+<main><section class="card"><div class="fld grow"><label for="ta">Text</label><textarea id="ta" ></textarea></div><div class="row" style="margin-top:12px"><div class="row"><button data-act="inspect">Inspect</button><button data-act="copy">Copy</button></div></div><div id="out"></div></section><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></main>
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const V=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};

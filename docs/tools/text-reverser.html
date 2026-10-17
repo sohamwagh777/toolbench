@@ -34,9 +34,9 @@ button:hover{filter:brightness(1.12)}button.ghost{background:var(--panel2);color
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style></head><body>
 <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
-<div class="mid"><div class="cat">Text</div><h1>Text Reverser</h1><p class="desc">Reverse characters, words or lines; blank-line runs collapse to one gap.</p></div>
+<div class="mid"><div class="cat">Text</div><h1>Text Reverser</h1><p class="desc">Reverse characters, words or lines; also strips repeated whitespace.</p></div>
 <a class="tag" href="../index.html">TOOLBENCH</a></header>
-<main><section class="card"><div class="row"><div class="fld"><label for="m">Reverse</label><select id="m"><option value="char">Characters</option><option value="word">Words</option><option value="line">Lines</option></select></div></div><div class="fld grow"><label for="ta">Text</label><textarea id="ta" ></textarea></div><div class="row" style="margin-top:12px"><div class="row"><button data-act="run">Run</button><button data-act="copy">Copy</button></div></div><div id="out"></div></section><p class="hint"><b>How to use.</b> Pick a mode, type or paste; the result writes to the output box live as you type.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></main>
+<main><section class="card"><div class="row"><div class="fld"><label for="m">Reverse</label><select id="m"><option value="char">Characters</option><option value="word">Words</option><option value="line">Lines</option></select></div></div><div class="fld grow"><label for="ta">Text</label><textarea id="ta" ></textarea></div><div class="row" style="margin-top:12px"><div class="row"><button data-act="run">Run</button><button data-act="copy">Copy</button></div></div><div id="out"></div></section><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></main>
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const V=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};

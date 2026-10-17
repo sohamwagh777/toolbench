@@ -1,348 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Slug Generator</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --border: #334155;
-      --border-focus: #3b82f6;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --primary: #3b82f6;
-      --primary-hover: #2563eb;
-      --accent: #10b981;
-      --accent-hover: #059669;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem 1rem;
-    }
-    .container {
-      width: 100%;
-      max-width: 850px;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-    header {
-      text-align: center;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
-    }
-    header h1 { font-size: 1.75rem; margin-bottom: 0.35rem; color: #fff; }
-    header p { color: var(--text-muted); font-size: 0.95rem; }
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-    }
-    .input-group { display: flex; flex-direction: column; gap: 0.4rem; }
-    label { font-size: 0.82rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
-    textarea, input[type="text"], input[type="number"], select {
-      width: 100%;
-      background: #0b1120;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      font-size: 0.95rem;
-      padding: 0.75rem;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    textarea:focus, input[type="text"]:focus, select:focus { border-color: var(--border-focus); }
-    .options-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
-      background: #0b1120;
-      padding: 1rem;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-    }
-    .option-item { display: flex; flex-direction: column; gap: 0.35rem; }
-    .checkbox-label {
-      font-size: 0.85rem;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      cursor: pointer;
-      text-transform: none;
-      font-weight: normal;
-      margin-top: 0.3rem;
-    }
-    .checkbox-label input { accent-color: var(--primary); }
-    .output-box {
-      background: #0b1120;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.85rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    .output-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-    .slug-display {
-      font-family: ui-monospace, monospace;
-      font-size: 1.15rem;
-      color: #38bdf8;
-      word-break: break-all;
-      background: #050b14;
-      padding: 0.85rem;
-      border-radius: 6px;
-      border: 1px solid #1e293b;
-      min-height: 48px;
-      display: flex;
-      align-items: center;
-    }
-    .btn-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-    .btn {
-      background: #334155;
-      color: var(--text);
-      border: none;
-      border-radius: 6px;
-      padding: 0.5rem 1rem;
-      font-size: 0.85rem;
-      cursor: pointer;
-      font-weight: 500;
-      transition: background 0.15s;
-    }
-    .btn:hover { background: #475569; }
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-primary:hover { background: var(--primary-hover); }
-    .btn-accent { background: var(--accent); color: #fff; }
-    .btn-accent:hover { background: var(--accent-hover); }
-  
-:root{--tb-acc:#d8a25e}
-header.tb{display:flex;align-items:center;gap:14px;max-width:860px;margin:0 auto;padding:20px 20px 6px}
-header.tb .back{font:600 11px/1 ui-monospace,'Cascadia Mono','SF Mono',Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut,#8f949b);border:1px solid var(--border,#282c32);padding:9px 12px;border-radius:8px;white-space:nowrap}
-header.tb .back:hover{color:var(--text,#ecebe6);border-color:#8f949b}
-header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 ui-monospace,'Cascadia Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#d8a25e}
-header.tb h1{font:400 21px/1.25 Georgia,'Iowan Old Style',serif;margin:4px 0 3px;color:var(--text,#ecebe6)}
-header.tb .desc,header.tb .howto,header.tb .priv{margin:0;font-size:12.5px;color:var(--text-muted,#8f949b)}
-header.tb .howto{margin-top:4px}header.tb .howto b{color:#ecebe6;font-weight:600}
-header.tb .priv{margin-top:4px;font-size:11px;opacity:.75}
-header.tb .tag{font:600 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--mut,#8f949b);text-decoration:none}
-@media(max-width:640px){header.tb{padding:14px 14px 4px}}
-</style>
-</head>
-<body>
-  <div class="container">
-    <header>
-      <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
-<div class="mid"><div class="cat">DEVELOPER</div><h1>Slug Generator</h1><p class="desc">Clean, URL-safe slugs in five flavours (kebab, snake, camel, Pascal, spaced) plus a de-duplicating column mode.</p><p class="howto"><b>How to use.</b> Edit either box and the other stays in sync; click a preset chip to reset the text (it refills if you restore it later).</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></div>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Slug Generator · Toolbench</title>
+<style>
+:root{--bg:#0e0f11;--panel:#15171a;--panel2:#1b1e22;--line:#282c32;--ink:#ecebe6;--mut:#8f949b;
+--acc:#d8a25e;--mono:ui-monospace,'Cascadia Mono','JetBrains Mono','SF Mono',Consolas,monospace;
+--sans:ui-sans-serif,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+--serif:Georgia,'Iowan Old Style','Times New Roman',serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 var(--sans)}
+a{color:inherit}header.tb{display:flex;align-items:center;gap:16px;max-width:780px;margin:0 auto;padding:22px 20px 14px}
+header.tb .back{font:600 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut);border:1px solid var(--line);padding:9px 12px;border-radius:8px;white-space:nowrap;transition:color .15s,border-color .15s}
+header.tb .back:hover{color:var(--ink);border-color:var(--mut)}
+header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+header.tb h1{font:400 21px/1.25 var(--serif);margin:4px 0 3px}
+header.tb .desc{margin:0;font-size:12.5px;color:var(--mut)}
+header.tb .tag{font:600 10px/1 var(--mono);letter-spacing:.14em;color:var(--mut);text-decoration:none}
+main{max-width:780px;margin:0 auto;padding:6px 20px 56px}
+section.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.fld{display:flex;flex-direction:column;gap:5px;min-width:0}.fld.grow{flex:1 1 220px}
+label{font:600 10.5px/1.2 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--mut)}
+input,select,textarea{background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:9px 11px;font:13px/1.4 var(--mono);width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 18%,transparent)}
+textarea{min-height:130px;resize:vertical}
+button{background:var(--acc);color:#101214;font:700 11.5px/1 var(--sans);letter-spacing:.07em;text-transform:uppercase;padding:11px 15px;border-radius:8px;border:0;cursor:pointer;transition:filter .15s}
+button:hover{filter:brightness(1.12)}button.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+#out{white-space:pre-wrap;word-break:break-word;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;font:13px/1.65 var(--mono);min-height:52px;margin-top:14px}
+#out:empty::before{content:'—';color:var(--mut)}
+.hint{font-size:12px;color:var(--mut);margin:0 0 12px}
+.hint b{color:var(--ink);font-weight:600}
+.priv{font-size:11px;color:var(--mut);opacity:.8;margin:14px 0 0}
+@media (max-width:640px){header.tb{padding:16px 14px 10px}main{padding:4px 14px 40px}.row{flex-direction:column}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style></head><body>
+<header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
+<div class="mid"><div class="cat">Text</div><h1>Slug Generator</h1><p class="desc">URL-safe slugs: transliterates accents, strips emoji, keeps any language readable.</p></div>
 <a class="tag" href="../index.html">TOOLBENCH</a></header>
-
-<p>Generate clean, URL-friendly slugs from strings with custom separators, case options, and transliteration.</p>
-    </header>
-
-    <div class="card">
-      <div class="input-group">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <label for="inputText">Input Text</label>
-          <div class="btn-row">
-            <button class="btn" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="loadSample(1)">Sample 1</button>
-            <button class="btn" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="loadSample(2)">Sample 2 (Accents)</button>
-            <button class="btn" style="padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="clearInput()">Clear</button>
-          </div>
-        </div>
-        <textarea id="inputText" rows="3" placeholder="Enter headline, title, or string...">The 10 Best Practices for Building Ultra-Fast Web Apps in 2026!</textarea>
-      </div>
-
-      <div class="options-grid">
-        <div class="option-item">
-          <label for="separatorSelect">Separator</label>
-          <select id="separatorSelect" onchange="generate()">
-            <option value="-" selected>Hyphen (-)</option>
-            <option value="_">Underscore (_)</option>
-            <option value=".">Dot (.)</option>
-            <option value="/">Slash (/)</option>
-            <option value="">None (Concatenate)</option>
-          </select>
-        </div>
-
-        <div class="option-item">
-          <label for="caseSelect">Letter Case</label>
-          <select id="caseSelect" onchange="generate()">
-            <option value="lower" selected>lowercase</option>
-            <option value="upper">UPPERCASE</option>
-            <option value="keep">Keep Original</option>
-          </select>
-        </div>
-
-        <div class="option-item">
-          <label for="maxLengthInput">Max Length (0 = No limit)</label>
-          <input type="number" id="maxLengthInput" min="0" max="255" value="0" oninput="generate()">
-        </div>
-
-        <div class="option-item">
-          <label>Transformations</label>
-          <label class="checkbox-label">
-            <input type="checkbox" id="transliterate" checked onchange="generate()"> Normalize Accents (é &rarr; e)
-          </label>
-          <label class="checkbox-label">
-            <input type="checkbox" id="removeStopwords" onchange="generate()"> Strip Stopwords (the, a, in...)
-          </label>
-          <label class="checkbox-label">
-            <input type="checkbox" id="batchMode" onchange="generate()"> Batch Mode (One slug per line)
-          </label>
-        </div>
-      </div>
-
-      <div class="output-box">
-        <div class="output-header">
-          <span>Generated URL Slug</span>
-          <span id="charStats">0 chars</span>
-        </div>
-        <div id="slugOutput" class="slug-display"></div>
-        <div style="display: flex; justify-content: flex-end; margin-top: 0.5rem;">
-          <button class="btn btn-accent" id="btnCopy" onclick="copySlug()">Copy to Clipboard</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const inputText = document.getElementById('inputText');
-    const separatorSelect = document.getElementById('separatorSelect');
-    const caseSelect = document.getElementById('caseSelect');
-    const maxLengthInput = document.getElementById('maxLengthInput');
-    const transliterateCheck = document.getElementById('transliterate');
-    const removeStopwordsCheck = document.getElementById('removeStopwords');
-    const batchModeCheck = document.getElementById('batchMode');
-    const slugOutput = document.getElementById('slugOutput');
-    const charStats = document.getElementById('charStats');
-    const btnCopy = document.getElementById('btnCopy');
-
-    const stopwords = new Set([
-      'a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 'and', 'any', 'are', 'as', 'at',
-      'be', 'because', 'been', 'before', 'being', 'below', 'between', 'both', 'but', 'by',
-      'for', 'from', 'further', 'had', 'has', 'have', 'having', 'he', 'her', 'here', 'hers', 'herself',
-      'him', 'himself', 'his', 'how', 'i', 'if', 'in', 'into', 'is', 'it', 'its', 'itself',
-      'me', 'more', 'most', 'my', 'myself', 'no', 'nor', 'not', 'of', 'off', 'on', 'once', 'only',
-      'or', 'other', 'ought', 'our', 'ours', 'ourselves', 'out', 'over', 'own', 'same', 'she', 'so',
-      'some', 'such', 'than', 'that', 'the', 'their', 'theirs', 'them', 'themselves', 'then',
-      'there', 'these', 'they', 'this', 'those', 'through', 'to', 'too', 'under', 'until', 'up',
-      'very', 'was', 'we', 'were', 'what', 'when', 'where', 'which', 'while', 'who', 'whom', 'why', 'with'
-    ]);
-
-    function createSlug(str) {
-      if (!str) return '';
-      let s = str;
-
-      // 1. Transliterate accents
-      if (transliterateCheck.checked) {
-        s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-      }
-
-      // 2. Case transformation
-      const caseMode = caseSelect.value;
-      if (caseMode === 'lower') s = s.toLowerCase();
-      else if (caseMode === 'upper') s = s.toUpperCase();
-
-      // 3. Remove non-alphanumeric (except spaces and delimiters)
-      s = s.replace(/[^a-zA-Z0-9\s-_]/g, ' ');
-
-      // 4. Split into words
-      let words = s.trim().split(/\s+/).filter(Boolean);
-
-      // 5. Remove stopwords
-      if (removeStopwordsCheck.checked) {
-        words = words.filter(w => !stopwords.has(w.toLowerCase()));
-      }
-
-      const sep = separatorSelect.value;
-      let slug = words.join(sep);
-
-      // 6. Max length limit
-      const maxLen = parseInt(maxLengthInput.value, 10);
-      if (maxLen > 0 && slug.length > maxLen) {
-        slug = slug.substring(0, maxLen);
-        if (sep && slug.endsWith(sep)) {
-          slug = slug.slice(0, -sep.length);
-        }
-      }
-
-      return slug;
-    }
-
-    function generate() {
-      const text = inputText.value;
-      const isBatch = batchModeCheck.checked;
-
-      if (!text.trim()) {
-        slugOutput.textContent = '';
-        charStats.textContent = '0 chars';
-        return;
-      }
-
-      if (isBatch) {
-        const lines = text.split('\n');
-        const slugs = lines.map(createSlug).filter(Boolean);
-        slugOutput.style.whiteSpace = 'pre-wrap';
-        slugOutput.textContent = slugs.join('\n');
-        charStats.textContent = `${slugs.length} slugs generated`;
-      } else {
-        const slug = createSlug(text);
-        slugOutput.style.whiteSpace = 'normal';
-        slugOutput.textContent = slug;
-        charStats.textContent = `${slug.length} chars`;
-      }
-    }
-
-    function copySlug() {
-      const text = slugOutput.textContent;
-      if (!text) return;
-      navigator.clipboard.writeText(text).then(() => {
-        const oldText = btnCopy.textContent;
-        btnCopy.textContent = '✓ Copied!';
-        setTimeout(() => { btnCopy.textContent = oldText; }, 1500);
-      });
-    }
-
-    function loadSample(n) {
-      if (n === 1) {
-        inputText.value = "The 10 Best Practices for Building Ultra-Fast Web Apps in 2026!";
-      } else {
-        inputText.value = "Café & Crème Brûlée: Délicieuse Recette Traditïonnelle Française à Paris";
-      }
-      generate();
-    }
-
-    function clearInput() {
-      inputText.value = '';
-      generate();
-    }
-
-    inputText.addEventListener('input', generate);
-    generate();
-  </script>
-</body>
-</html>
+<main><section class="card"><div class="fld grow"><label for="ta">Text</label><textarea id="ta" ></textarea></div><div class="row" style="margin-top:12px"><div class="fld"><label for="sep">Separator</label><select id="sep"><option value="-">hyphen -</option><option value="_">underscore _</option><option value="">none</option></select></div><div class="row"><button data-act="generate">Generate</button><button data-act="copy">Copy</button></div></div><div id="out"></div></section><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></main>
 <script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const V=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};
+const OUT=h=>{const o=document.getElementById('out');if(o)o.innerHTML=h;};
+const fmt=(n,d=6)=>{if(n===null||n===undefined||!isFinite(n))return '\u2014';return (+n).toLocaleString('en-US',{maximumFractionDigits:d});};
+const wire=ids=>(Array.isArray(ids)?ids:[ids]).forEach(i=>{const e=document.getElementById(i);if(e)e.addEventListener('input',()=>window.run&&window.run());});
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+const act=(b.dataset.act||'').toLowerCase();
+if(act==='copy'){if(navigator.clipboard&&navigator.clipboard.writeText){const t=document.getElementById('out').innerText;navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent='Copied ✓';setTimeout(()=>b.textContent=o,900)})}return}
+if(window.run)run();});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!(e.target.closest&&e.target.closest('input,textarea,select'))){location.href='../index.html';}});
+const M={"á":"a","à":"a","â":"a","ä":"a","ã":"a","å":"a","é":"e","è":"e","ê":"e","ë":"e","í":"i","ì":"i","î":"i","ï":"i","ó":"o","ò":"o","ô":"o","ö":"o","õ":"o","ů":"u","ú":"u","ü":"u","ñ":"n","ç":"c","ý":"y","þ":"th","ø":"o","đ":"d","ł":"l"};
+function run(){const s=V('ta')||'';const sep=V('sep');let s2='';
+for(const c of s.toLowerCase()){s2+=(M[c]||c)}
+s2=s2.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,sep||'-').replace(/^-+|-+$/g,'');
+OUT(s2)}
+if(!V('ta')){$('#ta').value="Crème Brûlée — Straße!"}run();wire(['ta','sep']);
 </script>
+</body></html>

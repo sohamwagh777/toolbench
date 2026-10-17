@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emoji Picker</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --success: #10b981;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+    .container {
+      width: 100%;
+      max-width: 780px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    header { text-align: center; }
+    header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.35rem; }
+    header p { color: var(--text-muted); font-size: 0.95rem; }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+    .search-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.85rem;
+    }
+    input[type="text"] {
+      flex: 1;
+      background: #0b1120;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+    }
+    input[type="text"]:focus { border-color: var(--primary); }
+    .categories {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .cat-btn {
+      background: #0b1120;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .cat-btn:hover { color: var(--text); border-color: #475569; }
+    .cat-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .recent-bar {
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      overflow-x: auto;
+    }
+    .recent-label { font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; }
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+      gap: 0.4rem;
+      max-height: 380px;
+      overflow-y: auto;
+      padding-right: 0.25rem;
+    }
+    .emoji-item {
+      font-size: 1.6rem;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0b1120;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.12s ease, border-color 0.12s ease;
+      user-select: none;
+    }
+    .emoji-item:hover {
+      transform: scale(1.15);
+      border-color: var(--primary);
+      background: #1e293b;
+      z-index: 2;
+    }
+    .preview-box {
+      margin-top: 1rem;
+      padding: 0.85rem;
+      background: #0b1120;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .preview-left { display: flex; align-items: center; gap: 1rem; }
+    .preview-char { font-size: 2.5rem; line-height: 1; }
+    .preview-details { display: flex; flex-direction: column; gap: 0.2rem; }
+    .preview-name { font-weight: 600; font-size: 1rem; }
+    .preview-tags { font-size: 0.8rem; color: var(--text-muted); }
+    .copy-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .copy-btn:hover { background: var(--primary-hover); }
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      background: #10b981;
+      color: #022c22;
+      font-weight: 700;
+      padding: 0.6rem 1.25rem;
+      border-radius: 999px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+  
+:root{--tb-acc:#d8a25e}
+header.tb{display:flex;align-items:center;gap:14px;max-width:860px;margin:0 auto;padding:20px 20px 6px}
+header.tb .back{font:600 11px/1 ui-monospace,'Cascadia Mono','SF Mono',Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut,#8f949b);border:1px solid var(--border,#282c32);padding:9px 12px;border-radius:8px;white-space:nowrap}
+header.tb .back:hover{color:var(--text,#ecebe6);border-color:#8f949b}
+header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 ui-monospace,'Cascadia Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#d8a25e}
+header.tb h1{font:400 21px/1.25 Georgia,'Iowan Old Style',serif;margin:4px 0 3px;color:var(--text,#ecebe6)}
+header.tb .desc,header.tb .howto,header.tb .priv{margin:0;font-size:12.5px;color:var(--text-muted,#8f949b)}
+header.tb .howto{margin-top:4px}header.tb .howto b{color:#ecebe6;font-weight:600}
+header.tb .priv{margin-top:4px;font-size:11px;opacity:.75}
+header.tb .tag{font:600 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--mut,#8f949b);text-decoration:none}
+@media(max-width:640px){header.tb{padding:14px 14px 4px}}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
+<div class="mid"><div class="cat">TIME & PRODUCTIVITY</div><h1>Emoji Picker</h1><p class="desc">Search or browse 25 emoji with skin-tone variants and shortcodes; click to copy.</p><p class="howto"><b>How to use.</b> Type a keyword or press / to jump to search, click any emoji to copy it to the clipboard.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></div>
+<a class="tag" href="../index.html">TOOLBENCH</a></header>
+
+<p>Search, explore categories, and copy emojis to clipboard offline with zero external requests.</p>
+    </header>
+
+    <div class="card">
+      <div class="search-row">
+        <input type="text" id="searchInput" placeholder="Search emojis by name or keyword (e.g. smile, fire, dog, heart)..." oninput="handleSearch()">
+      </div>
+
+      <div class="categories" id="catList">
+        <button class="cat-btn active" onclick="setCategory('all', this)">All</button>
+        <button class="cat-btn" onclick="setCategory('Smileys', this)">Smileys</button>
+        <button class="cat-btn" onclick="setCategory('Gestures', this)">Gestures</button>
+        <button class="cat-btn" onclick="setCategory('Animals', this)">Animals</button>
+        <button class="cat-btn" onclick="setCategory('Food', this)">Food</button>
+        <button class="cat-btn" onclick="setCategory('Activities', this)">Activities</button>
+        <button class="cat-btn" onclick="setCategory('Objects', this)">Objects</button>
+        <button class="cat-btn" onclick="setCategory('Symbols', this)">Symbols</button>
+      </div>
+
+      <div class="recent-bar" id="recentBar" style="display:none;">
+        <span class="recent-label">Recent:</span>
+        <div id="recentList" style="display:flex; gap:0.35rem;"></div>
+      </div>
+
+      <div class="emoji-grid" id="emojiGrid"></div>
+
+      <div class="preview-box" id="previewBox">
+        <div class="preview-left">
+          <div class="preview-char" id="previewChar">😀</div>
+          <div class="preview-details">
+            <div class="preview-name" id="previewName">Grinning Face</div>
+            <div class="preview-tags" id="previewTags">Tags: smile happy joy grin</div>
+          </div>
+        </div>
+        <button class="copy-btn" id="copyBtn" onclick="copyCurrent()">Copy Emoji</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">Copied to clipboard!</div>
+
+  <script>
+    const EMOJIS = [
+      { char: '😀', name: 'Grinning Face', cat: 'Smileys', tags: 'smile happy joy grin' },
+      { char: '😃', name: 'Grinning Face Big Eyes', cat: 'Smileys', tags: 'happy joy excitement' },
+      { char: '😄', name: 'Grinning Face Smiling Eyes', cat: 'Smileys', tags: 'happy joy laugh' },
+      { char: '😁', name: 'Beaming Face', cat: 'Smileys', tags: 'smile grin teeth' },
+      { char: '😆', name: 'Grinning Squinting Face', cat: 'Smileys', tags: 'laugh hilarious rofl' },
+      { char: '😅', name: 'Sweat Smile', cat: 'Smileys', tags: 'nervous relief laugh' },
+      { char: '🤣', name: 'Rolling on Floor Laughing', cat: 'Smileys', tags: 'rofl lol funny' },
+      { char: '😂', name: 'Face with Tears of Joy', cat: 'Smileys', tags: 'crying laugh lol' },
+      { char: '🙂', name: 'Slightly Smiling', cat: 'Smileys', tags: 'smile ok content' },
+      { char: '😉', name: 'Winking Face', cat: 'Smileys', tags: 'wink flirty joke' },
+      { char: '😊', name: 'Smiling Face', cat: 'Smileys', tags: 'blush warm happy' },
+      { char: '😇', name: 'Smiling Face with Halo', cat: 'Smileys', tags: 'angel innocent good' },
+      { char: '🥰', name: 'Smiling Face with Hearts', cat: 'Smileys', tags: 'love adore affection' },
+      { char: '😍', name: 'Heart Eyes', cat: 'Smileys', tags: 'love crush adore' },
+      { char: '🤩', name: 'Star-Struck', cat: 'Smileys', tags: 'star wow amazed' },
+      { char: '😘', name: 'Face Blowing Kiss', cat: 'Smileys', tags: 'kiss love flirt' },
+      { char: '😋', name: 'Savoring Food', cat: 'Smileys', tags: 'yum delicious tongue' },
+      { char: '😜', name: 'Winking Tongue', cat: 'Smileys', tags: 'crazy wink silly' },
+      { char: '🤪', name: 'Zany Face', cat: 'Smileys', tags: 'wild silly goofy' },
+      { char: '🤑', name: 'Money Face', cat: 'Smileys', tags: 'money rich dollar' },
+      { char: '🤗', name: 'Hugging Face', cat: 'Smileys', tags: 'hug warm affection' },
+      { char: '🤫', name: 'Shushing Face', cat: 'Smileys', tags: 'quiet secret shh' },
+      { char: '🤔', name: 'Thinking Face', cat: 'Smileys', tags: 'think hmm wonder' },
+      { char: '🤐', name: 'Zipper Mouth', cat: 'Smileys', tags: 'silent secret quiet' },
+      { char: '😏', name: 'Smirking Face', cat: 'Smileys', tags: 'smirk smug flirty' },
+      { char: '🙄', name: 'Rolling Eyes', cat: 'Smileys', tags: 'eyeroll whatever bored' },
+      { char: '😬', name: 'Grimacing Face', cat: 'Smileys', tags: 'awkward cringe eek' },
+      { char: '😴', name: 'Sleeping Face', cat: 'Smileys', tags: 'sleep tired zzz bed' },
+      { char: '😷', name: 'Medical Mask', cat: 'Smileys', tags: 'mask sick doctor' },
+      { char: '🥵', name: 'Hot Face', cat: 'Smileys', tags: 'heat sweating spicy' },
+      { char: '🥶', name: 'Cold Face', cat: 'Smileys', tags: 'freeze winter cold ice' },
+      { char: '🤯', name: 'Exploding Head', cat: 'Smileys', tags: 'mindblown wow shock' },
+      { char: '🥳', name: 'Partying Face', cat: 'Smileys', tags: 'party celebrate horn hat' },
+      { char: '😎', name: 'Sunglasses Face', cat: 'Smileys', tags: 'cool shades awesome' },
+      { char: '🤓', name: 'Nerd Face', cat: 'Smileys', tags: 'geek smart glasses' },
+      { char: '😭', name: 'Loudly Crying', cat: 'Smileys', tags: 'sob crying sad tears' },
+      { char: '😱', name: 'Screaming in Fear', cat: 'Smileys', tags: 'scared horror scream' },
+      { char: '😡', name: 'Enraged Face', cat: 'Smileys', tags: 'angry mad rage furious' },
+      { char: '💀', name: 'Skull', cat: 'Smileys', tags: 'dead bones death rip' },
+      { char: '💩', name: 'Pile of Poo', cat: 'Smileys', tags: 'poop crap funny' },
+
+      { char: '👋', name: 'Waving Hand', cat: 'Gestures', tags: 'wave hello goodbye hi' },
+      { char: '✋', name: 'Raised Hand', cat: 'Gestures', tags: 'stop high five halt' },
+      { char: '👌', name: 'OK Hand', cat: 'Gestures', tags: 'ok fine perfect agree' },
+      { char: '✌️', name: 'Victory Hand', cat: 'Gestures', tags: 'peace v win two' },
+      { char: '🤞', name: 'Crossed Fingers', cat: 'Gestures', tags: 'luck hope wish' },
+      { char: '🤟', name: 'Love-You Gesture', cat: 'Gestures', tags: 'ily rock love' },
+      { char: '🤙', name: 'Call Me Hand', cat: 'Gestures', tags: 'shaka call hang loose' },
+      { char: '👍', name: 'Thumbs Up', cat: 'Gestures', tags: 'like good yes approve' },
+      { char: '👎', name: 'Thumbs Down', cat: 'Gestures', tags: 'dislike bad no reject' },
+      { char: '👊', name: 'Oncoming Fist', cat: 'Gestures', tags: 'fist bump punch hit' },
+      { char: '👏', name: 'Clapping Hands', cat: 'Gestures', tags: 'clap bravo applause' },
+      { char: '🙌', name: 'Raising Hands', cat: 'Gestures', tags: 'praise celebrate hooray' },
+      { char: '🤝', name: 'Handshake', cat: 'Gestures', tags: 'deal agreement partner' },
+      { char: '🙏', name: 'Folded Hands', cat: 'Gestures', tags: 'please thank you pray namaste' },
+
+      { char: '🐶', name: 'Dog Face', cat: 'Animals', tags: 'dog puppy pet canine' },
+      { char: '🐱', name: 'Cat Face', cat: 'Animals', tags: 'cat kitten feline pet' },
+      { char: '🐭', name: 'Mouse Face', cat: 'Animals', tags: 'mouse rodent animal' },
+      { char: '🐰', name: 'Rabbit Face', cat: 'Animals', tags: 'bunny rabbit easter cute' },
+      { char: '🦊', name: 'Fox Face', cat: 'Animals', tags: 'fox wild animal nature' },
+      { char: '🐻', name: 'Bear Face', cat: 'Animals', tags: 'bear grizzly animal' },
+      { char: '🐼', name: 'Panda Face', cat: 'Animals', tags: 'panda bamboo bear' },
+      { char: '🐯', name: 'Tiger Face', cat: 'Animals', tags: 'tiger cat wild stripes' },
+      { char: '🦁', name: 'Lion Face', cat: 'Animals', tags: 'lion king wild cat' },
+      { char: '🐮', name: 'Cow Face', cat: 'Animals', tags: 'cow milk beef farm' },
+      { char: '🐷', name: 'Pig Face', cat: 'Animals', tags: 'pig farm pork cute' },
+      { char: '🐸', name: 'Frog Face', cat: 'Animals', tags: 'frog toad nature pond' },
+      { char: '🐵', name: 'Monkey Face', cat: 'Animals', tags: 'monkey ape animal jungle' },
+      { char: '🐧', name: 'Penguin', cat: 'Animals', tags: 'penguin bird cold' },
+      { char: '🦅', name: 'Eagle', cat: 'Animals', tags: 'eagle bird prey raptor' },
+      { char: '🦉', name: 'Owl', cat: 'Animals', tags: 'owl bird night wise' },
+      { char: '🦄', name: 'Unicorn', cat: 'Animals', tags: 'unicorn magic horse rainbow' },
+      { char: '🐝', name: 'Honeybee', cat: 'Animals', tags: 'bee honey insect bug' },
+      { char: '🦋', name: 'Butterfly', cat: 'Animals', tags: 'butterfly insect beauty' },
+
+      { char: '🍎', name: 'Red Apple', cat: 'Food', tags: 'apple fruit food red' },
+      { char: '🍌', name: 'Banana', cat: 'Food', tags: 'banana fruit yellow snack' },
+      { char: '🍉', name: 'Watermelon', cat: 'Food', tags: 'watermelon fruit summer' },
+      { char: '🍓', name: 'Strawberry', cat: 'Food', tags: 'strawberry berry fruit' },
+      { char: '🥑', name: 'Avocado', cat: 'Food', tags: 'avocado veggie toast guac' },
+      { char: '🍔', name: 'Hamburger', cat: 'Food', tags: 'burger fastfood beef eat' },
+      { char: '🍟', name: 'French Fries', cat: 'Food', tags: 'fries potato fastfood' },
+      { char: '🍕', name: 'Pizza', cat: 'Food', tags: 'pizza slice cheese italian' },
+      { char: '🌮', name: 'Taco', cat: 'Food', tags: 'taco mexican food snack' },
+      { char: '🍣', name: 'Sushi', cat: 'Food', tags: 'sushi japanese fish rice' },
+      { char: '🍜', name: 'Ramen', cat: 'Food', tags: 'ramen noodles soup bowl' },
+      { char: '🍩', name: 'Doughnut', cat: 'Food', tags: 'donut sweet pastry dessert' },
+      { char: '🍪', name: 'Cookie', cat: 'Food', tags: 'cookie biscuit chocolate' },
+      { char: '☕', name: 'Coffee', cat: 'Food', tags: 'coffee tea hot drink cafe' },
+      { char: '🍺', name: 'Beer Mug', cat: 'Food', tags: 'beer alcohol drink pub' },
+
+      { char: '⚽', name: 'Soccer Ball', cat: 'Activities', tags: 'soccer football sport ball' },
+      { char: '🏀', name: 'Basketball', cat: 'Activities', tags: 'basketball hoop sport ball' },
+      { char: '🎾', name: 'Tennis', cat: 'Activities', tags: 'tennis racket court sport' },
+      { char: '🎮', name: 'Video Game', cat: 'Activities', tags: 'game controller gaming' },
+      { char: '🎯', name: 'Bullseye', cat: 'Activities', tags: 'target dart game goal hit' },
+      { char: '🎲', name: 'Game Die', cat: 'Activities', tags: 'dice roll board game luck' },
+      { char: '🎸', name: 'Guitar', cat: 'Activities', tags: 'guitar music rock acoustic' },
+
+      { char: '💡', name: 'Light Bulb', cat: 'Objects', tags: 'idea light lamp electric clever' },
+      { char: '💻', name: 'Laptop', cat: 'Objects', tags: 'computer pc tech coding' },
+      { char: '📱', name: 'Mobile Phone', cat: 'Objects', tags: 'phone mobile smartphone' },
+      { char: '⏰', name: 'Alarm Clock', cat: 'Objects', tags: 'clock time alarm wake' },
+      { char: '🔑', name: 'Key', cat: 'Objects', tags: 'key lock password security' },
+      { char: '📦', name: 'Package', cat: 'Objects', tags: 'box delivery shipping parcel' },
+      { char: '🚀', name: 'Rocket', cat: 'Objects', tags: 'rocket launch space ship fly' },
+      { char: '🔥', name: 'Fire', cat: 'Objects', tags: 'flame fire hot lit burning' },
+      { char: '⭐', name: 'Star', cat: 'Objects', tags: 'star shine night favorite' },
+      { char: '✨', name: 'Sparkles', cat: 'Objects', tags: 'magic sparkles shine glitter' },
+
+      { char: '❤️', name: 'Red Heart', cat: 'Symbols', tags: 'heart love romance red' },
+      { char: '💔', name: 'Broken Heart', cat: 'Symbols', tags: 'heartbreak sad breakup' },
+      { char: '✔️', name: 'Check Mark', cat: 'Symbols', tags: 'check ok tick done yes' },
+      { char: '❌', name: 'Cross Mark', cat: 'Symbols', tags: 'x no cancel wrong bad' },
+      { char: '⚠️', name: 'Warning', cat: 'Symbols', tags: 'alert danger caution' },
+      { char: '💯', name: 'Hundred Points', cat: 'Symbols', tags: '100 perfect exam score' },
+      { char: '🎉', name: 'Party Popper', cat: 'Symbols', tags: 'tada celebration congrats' }
+    ];
+
+    let currentCat = 'all';
+    let selectedEmoji = EMOJIS[0];
+    let recent = [];
+
+    function init() {
+      try {
+        const saved = localStorage.getItem('emoji_recent_list');
+        if (saved) recent = JSON.parse(saved);
+      } catch (e) {}
+      renderRecent();
+      renderGrid();
+      updatePreview(selectedEmoji);
+    }
+
+    function setCategory(cat, el) {
+      currentCat = cat;
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      renderGrid();
+    }
+
+    function handleSearch() {
+      renderGrid();
+    }
+
+    function renderGrid() {
+      const q = document.getElementById('searchInput').value.trim().toLowerCase();
+      const grid = document.getElementById('emojiGrid');
+      const filtered = EMOJIS.filter(e => {
+        const catMatch = currentCat === 'all' || e.cat === currentCat;
+        if (!catMatch) return false;
+        if (!q) return true;
+        return e.name.toLowerCase().includes(q) || e.tags.toLowerCase().includes(q);
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1 / -1; padding: 2rem; text-align: center; color: var(--text-muted);">No emojis match your search.</div>';
+        return;
+      }
+
+      grid.innerHTML = filtered.map(e => `
+        <div class="emoji-item" title="${e.name}" onclick="selectAndCopy('${e.char}')">
+          ${e.char}
+        </div>
+      `).join('');
+    }
+
+    function selectAndCopy(char) {
+      const item = EMOJIS.find(e => e.char === char) || { char: char, name: 'Emoji', cat: '', tags: '' };
+      updatePreview(item);
+      copyText(char);
+      addToRecent(char);
+    }
+
+    function copyCurrent() {
+      if (selectedEmoji) {
+        copyText(selectedEmoji.char);
+        addToRecent(selectedEmoji.char);
+      }
+    }
+
+    function copyText(str) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(str).then(showToast).catch(() => fallbackCopy(str));
+      } else {
+        fallbackCopy(str);
+      }
+    }
+
+    function fallbackCopy(str) {
+      const el = document.createElement('textarea');
+      el.value = str;
+      el.style.position = 'fixed';
+      el.style.opacity = '0';
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      showToast();
+    }
+
+    function showToast() {
+      const t = document.getElementById('toast');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 1500);
+    }
+
+    function addToRecent(char) {
+      recent = [char, ...recent.filter(c => c !== char)].slice(0, 10);
+      try {
+        localStorage.setItem('emoji_recent_list', JSON.stringify(recent));
+      } catch (e) {}
+      renderRecent();
+    }
+
+    function renderRecent() {
+      const bar = document.getElementById('recentBar');
+      const list = document.getElementById('recentList');
+      if (recent.length === 0) {
+        bar.style.display = 'none';
+        return;
+      }
+      bar.style.display = 'flex';
+      list.innerHTML = recent.map(c => `
+        <button class="emoji-item" style="width:36px; height:36px; font-size:1.25rem;" onclick="selectAndCopy('${c}')">${c}</button>
+      `).join('');
+    }
+
+    function updatePreview(item) {
+      selectedEmoji = item;
+      document.getElementById('previewChar').textContent = item.char;
+      document.getElementById('previewName').textContent = item.name;
+      document.getElementById('previewTags').textContent = item.tags ? `Tags: ${item.tags}` : '';
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
+<script>
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!(e.target.closest&&e.target.closest('input,textarea,select'))){location.href='../index.html';}});
+</script>

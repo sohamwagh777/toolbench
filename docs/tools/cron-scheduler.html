@@ -34,9 +34,9 @@ button:hover{filter:brightness(1.12)}button.ghost{background:var(--panel2);color
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style></head><body>
 <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
-<div class="mid"><div class="cat">Developer</div><h1>Cron Next Runs</h1><p class="desc">The next five times a cron string would fire, in your local time.</p></div>
+<div class="mid"><div class="cat">Developer</div><h1>Cron Next Runs</h1><p class="desc">The next five runs a cron string fires — local time</p></div>
 <a class="tag" href="../index.html">TOOLBENCH</a></header>
-<main><div class="fld grow"><label for="ta">Expression</label><input id="ta" type="text" ></div><div class="row"><button data-act="schedule">Schedule</button><button data-act="copy">Copy</button></div><div id="out"></div><p class="hint"><b>How to use.</b> Edit the cron string (or pick a preset) — the run list recalculates live; invalid strings show what's wrong.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></main>
+<main><div class="fld grow"><label for="ta">Expression</label><input id="ta" type="text" ></div><div class="row"><button data-act="schedule">Schedule</button><button data-act="copy">Copy</button></div><div id="out"></div><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></main>
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const V=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Temperature Converter</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --accent: #10b981;
+      --cold: #38bdf8;
+      --hot: #ef4444;
+      --warm: #f59e0b;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    header {
+      text-align: center;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+    }
+    header h1 {
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem;
+    }
+    .grid-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 480px) {
+      .grid-inputs {
+        grid-template-columns: 1fr;
+      }
+    }
+    .temp-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .unit-symbol {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 0.95rem;
+    }
+    .input-wrapper {
+      position: relative;
+    }
+    input[type="number"] {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1.25rem;
+      font-weight: 600;
+      padding: 0.65rem 0.85rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+    input[type="number"]:focus {
+      border-color: var(--primary);
+    }
+    .state-banner {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .state-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .state-badge {
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--primary);
+    }
+    .presets-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.6rem;
+    }
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 480px) {
+      .presets-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .preset-btn {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .preset-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .formulas-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.825rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+    .formulas-table td {
+      padding: 0.45rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .formulas-table td:first-child {
+      font-weight: 600;
+      color: var(--text);
+      width: 40%;
+    }
+  
+:root{--tb-acc:#d8a25e}
+header.tb{display:flex;align-items:center;gap:14px;max-width:860px;margin:0 auto;padding:20px 20px 6px}
+header.tb .back{font:600 11px/1 ui-monospace,'Cascadia Mono','SF Mono',Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut,#8f949b);border:1px solid var(--border,#282c32);padding:9px 12px;border-radius:8px;white-space:nowrap}
+header.tb .back:hover{color:var(--text,#ecebe6);border-color:#8f949b}
+header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 ui-monospace,'Cascadia Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#d8a25e}
+header.tb h1{font:400 21px/1.25 Georgia,'Iowan Old Style',serif;margin:4px 0 3px;color:var(--text,#ecebe6)}
+header.tb .desc,header.tb .howto,header.tb .priv{margin:0;font-size:12.5px;color:var(--text-muted,#8f949b)}
+header.tb .howto{margin-top:4px}header.tb .howto b{color:#ecebe6;font-weight:600}
+header.tb .priv{margin-top:4px;font-size:11px;opacity:.75}
+header.tb .tag{font:600 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--mut,#8f949b);text-decoration:none}
+@media(max-width:640px){header.tb{padding:14px 14px 4px}}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
+<div class="mid"><div class="cat">ENCODING & HASHING</div><h1>Temperature Converter</h1><p class="desc">Celsius, Fahrenheit and Kelvin one-way conversion.</p><p class="howto"><b>How to use.</b> Enter °F to get °C and K, or the reverse; Clear empties the input.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></div>
+<a class="tag" href="../index.html">TOOLBENCH</a></header>
+
+<p>Instantly convert temperatures between Celsius, Fahrenheit, Kelvin, and Rankine scales.</p>
+    </header>
+
+    <div class="card">
+      <div class="grid-inputs">
+        <div class="temp-input-group">
+          <div class="label-row">
+            <label for="celsius">Celsius</label>
+            <span class="unit-symbol">°C</span>
+          </div>
+          <div class="input-wrapper">
+            <input type="number" id="celsius" step="any" value="25">
+          </div>
+        </div>
+
+        <div class="temp-input-group">
+          <div class="label-row">
+            <label for="fahrenheit">Fahrenheit</label>
+            <span class="unit-symbol">°F</span>
+          </div>
+          <div class="input-wrapper">
+            <input type="number" id="fahrenheit" step="any" value="77">
+          </div>
+        </div>
+
+        <div class="temp-input-group">
+          <div class="label-row">
+            <label for="kelvin">Kelvin</label>
+            <span class="unit-symbol">K</span>
+          </div>
+          <div class="input-wrapper">
+            <input type="number" id="kelvin" step="any" value="298.15">
+          </div>
+        </div>
+
+        <div class="temp-input-group">
+          <div class="label-row">
+            <label for="rankine">Rankine</label>
+            <span class="unit-symbol">°R</span>
+          </div>
+          <div class="input-wrapper">
+            <input type="number" id="rankine" step="any" value="536.67">
+          </div>
+        </div>
+      </div>
+
+      <div class="state-banner">
+        <span class="state-label">Water State (1 atm):</span>
+        <span class="state-badge" id="waterState">Liquid</span>
+      </div>
+
+      <div class="presets-title">Quick Temperature Benchmarks</div>
+      <div class="presets-grid">
+        <button type="button" class="preset-btn" data-c="-273.15">Absolute Zero (-273.15°C)</button>
+        <button type="button" class="preset-btn" data-c="0">Freezing Point (0°C)</button>
+        <button type="button" class="preset-btn" data-c="20">Room Temp (20°C)</button>
+        <button type="button" class="preset-btn" data-c="37">Body Temp (37°C)</button>
+        <button type="button" class="preset-btn" data-c="100">Boiling Point (100°C)</button>
+        <button type="button" class="preset-btn" data-c="500">Furnace (500°C)</button>
+      </div>
+
+      <table class="formulas-table">
+        <tbody>
+          <tr>
+            <td>°F from °C</td>
+            <td>°F = (°C × 9/5) + 32</td>
+          </tr>
+          <tr>
+            <td>K from °C</td>
+            <td>K = °C + 273.15</td>
+          </tr>
+          <tr>
+            <td>°R from °C</td>
+            <td>°R = (°C + 273.15) × 9/5</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const cInput = document.getElementById('celsius');
+    const fInput = document.getElementById('fahrenheit');
+    const kInput = document.getElementById('kelvin');
+    const rInput = document.getElementById('rankine');
+    const waterState = document.getElementById('waterState');
+
+    function roundVal(v) {
+      return isNaN(v) ? '' : (Math.round(v * 1000) / 1000).toString();
+    }
+
+    function updateFromC(c) {
+      if (isNaN(c)) {
+        fInput.value = '';
+        kInput.value = '';
+        rInput.value = '';
+        waterState.textContent = '—';
+        return;
+      }
+      fInput.value = roundVal((c * 9/5) + 32);
+      kInput.value = roundVal(c + 273.15);
+      rInput.value = roundVal((c + 273.15) * 9/5);
+      updateState(c);
+    }
+
+    function updateState(c) {
+      if (c <= -273.15) {
+        waterState.textContent = 'Absolute Zero (0 K)';
+        waterState.style.color = '#38bdf8';
+      } else if (c < 0) {
+        waterState.textContent = 'Solid / Ice';
+        waterState.style.color = '#38bdf8';
+      } else if (c === 0) {
+        waterState.textContent = 'Freezing Point (0°C)';
+        waterState.style.color = '#38bdf8';
+      } else if (c < 100) {
+        waterState.textContent = 'Liquid Water';
+        waterState.style.color = '#10b981';
+      } else if (c === 100) {
+        waterState.textContent = 'Boiling Point (100°C)';
+        waterState.style.color = '#ef4444';
+      } else {
+        waterState.textContent = 'Gas / Steam';
+        waterState.style.color = '#ef4444';
+      }
+    }
+
+    cInput.addEventListener('input', () => {
+      const c = parseFloat(cInput.value);
+      updateFromC(c);
+    });
+
+    fInput.addEventListener('input', () => {
+      const f = parseFloat(fInput.value);
+      if (isNaN(f)) {
+        cInput.value = '';
+        kInput.value = '';
+        rInput.value = '';
+        waterState.textContent = '—';
+        return;
+      }
+      const c = (f - 32) * 5/9;
+      cInput.value = roundVal(c);
+      kInput.value = roundVal(c + 273.15);
+      rInput.value = roundVal(f + 459.67);
+      updateState(c);
+    });
+
+    kInput.addEventListener('input', () => {
+      const k = parseFloat(kInput.value);
+      if (isNaN(k)) {
+        cInput.value = '';
+        fInput.value = '';
+        rInput.value = '';
+        waterState.textContent = '—';
+        return;
+      }
+      const c = k - 273.15;
+      cInput.value = roundVal(c);
+      fInput.value = roundVal((c * 9/5) + 32);
+      rInput.value = roundVal(k * 1.8);
+      updateState(c);
+    });
+
+    rInput.addEventListener('input', () => {
+      const r = parseFloat(rInput.value);
+      if (isNaN(r)) {
+        cInput.value = '';
+        fInput.value = '';
+        kInput.value = '';
+        waterState.textContent = '—';
+        return;
+      }
+      const c = (r - 491.67) * 5/9;
+      cInput.value = roundVal(c);
+      fInput.value = roundVal(r - 459.67);
+      kInput.value = roundVal(r * 5/9);
+      updateState(c);
+    });
+
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const c = parseFloat(btn.dataset.c);
+        cInput.value = c;
+        updateFromC(c);
+      });
+    });
+
+    updateFromC(25);
+  </script>
+</body>
+</html>
+<script>
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!(e.target.closest&&e.target.closest('input,textarea,select'))){location.href='../index.html';}});
+</script>

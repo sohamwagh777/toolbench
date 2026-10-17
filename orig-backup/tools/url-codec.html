@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URL Codec</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card-inner: #0f172a;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --accent: #10b981;
+      --danger: #ef4444;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 860px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .options-bar {
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .radio-group, .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .custom-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: var(--text);
+      user-select: none;
+    }
+
+    .custom-label input {
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .panel {
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .panel-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background-color: var(--border);
+      color: var(--text);
+      border: 1px solid transparent;
+      padding: 0.45rem 0.85rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 0.825rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      background-color: #475569;
+    }
+
+    button.primary {
+      background-color: var(--primary);
+    }
+
+    button.primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    button.accent {
+      background-color: #059669;
+    }
+
+    button.accent:hover {
+      background-color: var(--accent);
+    }
+
+    textarea {
+      width: 100%;
+      height: 130px;
+      background-color: var(--card-inner);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.85rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .action-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .error-banner {
+      background-color: rgba(239, 68, 68, 0.15);
+      border: 1px solid var(--danger);
+      color: #fca5a5;
+      padding: 0.65rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      display: none;
+    }
+
+    .error-banner.show {
+      display: block;
+    }
+
+    .parser-box {
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      display: none;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .parser-box.show {
+      display: flex;
+    }
+
+    .parser-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .query-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .query-table th, .query-table td {
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+    }
+
+    .query-table th {
+      background-color: var(--card-inner);
+      color: var(--text-muted);
+    }
+
+    .query-table td {
+      word-break: break-all;
+      font-family: monospace;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      background-color: var(--accent);
+      color: #0f172a;
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.25s ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  
+:root{--tb-acc:#d8a25e}
+header.tb{display:flex;align-items:center;gap:14px;max-width:860px;margin:0 auto;padding:20px 20px 6px}
+header.tb .back{font:600 11px/1 ui-monospace,'Cascadia Mono','SF Mono',Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut,#8f949b);border:1px solid var(--border,#282c32);padding:9px 12px;border-radius:8px;white-space:nowrap}
+header.tb .back:hover{color:var(--text,#ecebe6);border-color:#8f949b}
+header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 ui-monospace,'Cascadia Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#d8a25e}
+header.tb h1{font:400 21px/1.25 Georgia,'Iowan Old Style',serif;margin:4px 0 3px;color:var(--text,#ecebe6)}
+header.tb .desc,header.tb .howto,header.tb .priv{margin:0;font-size:12.5px;color:var(--text-muted,#8f949b)}
+header.tb .howto{margin-top:4px}header.tb .howto b{color:#ecebe6;font-weight:600}
+header.tb .priv{margin-top:4px;font-size:11px;opacity:.75}
+header.tb .tag{font:600 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--mut,#8f949b);text-decoration:none}
+@media(max-width:640px){header.tb{padding:14px 14px 4px}}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
+<div class="mid"><div class="cat">ENCODING & HASHING</div><h1>URL Codec</h1><p class="desc">Percent-encode and decode URLs and query strings — single-encode, double-encode (e.g. %25253D) and full-decode helpers.</p><p class="howto"><b>How to use.</b> Edit the bottom (decoded) box and the top one tracks it; click the helper chips to force an encode mode, or hit Decode to reverse.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></div>
+<a class="tag" href="../index.html">TOOLBENCH</a></header>
+
+
+    </header>
+
+    <div class="options-bar">
+      <div class="radio-group">
+        <label class="custom-label">
+          <input type="radio" name="codec-mode" value="component" checked>
+          <span>Component (encodeURIComponent)</span>
+        </label>
+        <label class="custom-label">
+          <input type="radio" name="codec-mode" value="full">
+          <span>Full URL (encodeURI)</span>
+        </label>
+      </div>
+      <div class="checkbox-group">
+        <label class="custom-label">
+          <input type="checkbox" id="opt-plus-space">
+          <span>Form spaces (+ instead of %20)</span>
+        </label>
+        <label class="custom-label">
+          <input type="checkbox" id="opt-live" checked>
+          <span>Live</span>
+        </label>
+        <button id="btn-sample">Sample URL</button>
+      </div>
+    </div>
+
+    <div id="error-box" class="error-banner"></div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Decoded / Plain Input</div>
+        <div class="btn-group">
+          <button class="primary" id="btn-encode">Encode &darr;</button>
+          <button id="btn-copy-raw">Copy</button>
+          <button id="btn-clear-raw">Clear</button>
+        </div>
+      </div>
+      <textarea id="raw-input" placeholder="Enter text or URL to encode (e.g. https://example.com/search?q=hello world & tag=test)..."></textarea>
+    </div>
+
+    <div class="action-row">
+      <button id="btn-swap" class="accent">&uarr;&darr; Swap Input &amp; Encoded</button>
+      <button id="btn-clear-all">Clear All</button>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Encoded URL / Component</div>
+        <div class="btn-group">
+          <button class="primary" id="btn-decode">Decode &uarr;</button>
+          <button id="btn-copy-encoded">Copy</button>
+          <button id="btn-clear-encoded">Clear</button>
+        </div>
+      </div>
+      <textarea id="encoded-input" placeholder="Enter encoded string to decode..."></textarea>
+    </div>
+
+    <div id="parser-box" class="parser-box">
+      <span class="parser-title">Parsed URL Structure &amp; Parameters</span>
+      <div id="parser-content"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Copied to clipboard!</div>
+
+  <script>
+    const rawInput = document.getElementById('raw-input');
+    const encodedInput = document.getElementById('encoded-input');
+    const optPlusSpace = document.getElementById('opt-plus-space');
+    const optLive = document.getElementById('opt-live');
+    const errorBox = document.getElementById('error-box');
+    const parserBox = document.getElementById('parser-box');
+    const parserContent = document.getElementById('parser-content');
+    const toast = document.getElementById('toast');
+
+    let activeSource = 'raw';
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    function showError(msg) {
+      if (msg) {
+        errorBox.textContent = msg;
+        errorBox.classList.add('show');
+      } else {
+        errorBox.textContent = '';
+        errorBox.classList.remove('show');
+      }
+    }
+
+    function getMode() {
+      const checked = document.querySelector('input[name="codec-mode"]:checked');
+      return checked ? checked.value : 'component';
+    }
+
+    function doEncode() {
+      showError('');
+      const str = rawInput.value;
+      if (!str) {
+        encodedInput.value = '';
+        inspectUrl('');
+        return;
+      }
+      try {
+        let result = getMode() === 'component' ? encodeURIComponent(str) : encodeURI(str);
+        if (optPlusSpace.checked) {
+          result = result.replace(/%20/g, '+');
+        }
+        encodedInput.value = result;
+        inspectUrl(str);
+      } catch (e) {
+        showError('Encoding error: ' + e.message);
+      }
+    }
+
+    function doDecode() {
+      showError('');
+      let str = encodedInput.value;
+      if (!str) {
+        rawInput.value = '';
+        inspectUrl('');
+        return;
+      }
+      try {
+        if (optPlusSpace.checked) {
+          str = str.replace(/\+/g, '%20');
+        }
+        const result = getMode() === 'component' ? decodeURIComponent(str) : decodeURI(str);
+        rawInput.value = result;
+        inspectUrl(result);
+      } catch (e) {
+        showError('Decoding error: Malformed URI sequence (' + e.message + ')');
+      }
+    }
+
+    function inspectUrl(val) {
+      if (!val || (!val.startsWith('http://') && !val.startsWith('https://'))) {
+        parserBox.classList.remove('show');
+        return;
+      }
+      try {
+        const url = new URL(val);
+        let paramsHtml = '';
+        const params = Array.from(url.searchParams.entries());
+        if (params.length > 0) {
+          paramsHtml = `
+            <table class="query-table" style="margin-top: 0.75rem;">
+              <thead>
+                <tr>
+                  <th style="width: 35%;">Parameter Key</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${params.map(([k, v]) => `<tr><td><strong>${escapeHtml(k)}</strong></td><td>${escapeHtml(v)}</td></tr>`).join('')}
+              </tbody>
+            </table>
+          `;
+        } else {
+          paramsHtml = '<p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">No query parameters in this URL.</p>';
+        }
+
+        parserContent.innerHTML = `
+          <div style="font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.35rem;">
+            <div><strong style="color: var(--text-muted);">Origin:</strong> ${escapeHtml(url.origin)}</div>
+            <div><strong style="color: var(--text-muted);">Pathname:</strong> ${escapeHtml(url.pathname)}</div>
+            ${url.hash ? `<div><strong style="color: var(--text-muted);">Hash:</strong> ${escapeHtml(url.hash)}</div>` : ''}
+          </div>
+          ${paramsHtml}
+        `;
+        parserBox.classList.add('show');
+      } catch (e) {
+        parserBox.classList.remove('show');
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    rawInput.addEventListener('input', () => {
+      activeSource = 'raw';
+      if (optLive.checked) doEncode();
+    });
+
+    encodedInput.addEventListener('input', () => {
+      activeSource = 'encoded';
+      if (optLive.checked) doDecode();
+    });
+
+    document.querySelectorAll('input[name="codec-mode"]').forEach(r => {
+      r.addEventListener('change', () => {
+        if (optLive.checked) {
+          if (activeSource === 'raw') doEncode();
+          else doDecode();
+        }
+      });
+    });
+
+    optPlusSpace.addEventListener('change', () => {
+      if (optLive.checked) {
+        if (activeSource === 'raw') doEncode();
+        else doDecode();
+      }
+    });
+
+    document.getElementById('btn-encode').addEventListener('click', doEncode);
+    document.getElementById('btn-decode').addEventListener('click', doDecode);
+
+    document.getElementById('btn-swap').addEventListener('click', () => {
+      const temp = rawInput.value;
+      rawInput.value = encodedInput.value;
+      encodedInput.value = temp;
+      inspectUrl(rawInput.value);
+      showToast('Swapped inputs');
+    });
+
+    document.getElementById('btn-sample').addEventListener('click', () => {
+      rawInput.value = "https://example.com/search?q=modern web tools&category=developer/utilities&filter=new#results";
+      activeSource = 'raw';
+      doEncode();
+    });
+
+    async function copyText(text) {
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('Copied to clipboard!');
+      } catch (e) {
+        showToast('Copy error');
+      }
+    }
+
+    document.getElementById('btn-copy-raw').addEventListener('click', () => copyText(rawInput.value));
+    document.getElementById('btn-copy-encoded').addEventListener('click', () => copyText(encodedInput.value));
+
+    document.getElementById('btn-clear-raw').addEventListener('click', () => {
+      rawInput.value = '';
+      inspectUrl('');
+      showError('');
+    });
+
+    document.getElementById('btn-clear-encoded').addEventListener('click', () => {
+      encodedInput.value = '';
+      inspectUrl('');
+      showError('');
+    });
+
+    document.getElementById('btn-clear-all').addEventListener('click', () => {
+      rawInput.value = '';
+      encodedInput.value = '';
+      parserBox.classList.remove('show');
+      showError('');
+    });
+  </script>
+</body>
+</html>
+<script>
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!(e.target.closest&&e.target.closest('input,textarea,select'))){location.href='../index.html';}});
+</script>

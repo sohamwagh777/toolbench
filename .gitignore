@@ -1,6 +1,6 @@
-*.html.orig
+.dev/
+dev/
+*.log
 __pycache__/
 *.bak
-orig-backup/
-out/
-server.log
+*.html.orig

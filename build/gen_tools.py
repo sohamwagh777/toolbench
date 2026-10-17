@@ -1,10 +1,17 @@
 """Toolbench build: assemble exactly 100 tool pages + landing (101 HTML) into ../out.
 
-Sources:
-(a) ported self-contained pages from ~/.hermes/cache/scratch/htmltools (copied verbatim)
-(b) spec tools in tools_text/dev + tools_extra_a/b/c, rendered through shell.py
+Reference only — DO NOT RUN (kept so the shipped 100-name roster/_all.txt and
+the original cut-list stay auditable). Its ported source dir
+~/.hermes/cache/scratch/htmltools was PRUNED (scratch prunes in 24h), so it
+now builds 50 pages. Its dedup keyed on id-collision only: when the ported
+name did NOT collide with a spec id (grep + regex-tester, two markdown
+previewers, two query labs, …) it SHIPPED BOTH twins — the "20-faced die"
+that gen_v3.py now cuts. Current pipeline: gen_v3.py (roster + build/orig/tools).
 
-Run: python3 gen_tools.py
+Sources (historical): (a) ported copies from the scratch dir, verbatim;
+(b) spec tools in tools_text/dev + tools_extra_a/b/c rendered through shell.py.
+
+Run: python3 gen_tools.py   # (don't — see above)
 """
 import os, sys, json, shutil, glob
 
@@ -15,7 +22,8 @@ from gen_helpers import CAT_ACCENTS
 
 ROOT = os.path.dirname(HERE)
 OUT = os.path.join(ROOT, "docs")  # docs/ = GitHub Pages site root
-SCRATCH = os.path.expanduser("~/.hermes/cache/scratch/htmltools")
+SCRATCH = os.path.expanduser("~/.hermes/cache/scratch/htmltools")  # PRUNED DIR — do not run this file; use gen_v3.py
+ORIG = os.path.join(HERE, "orig", "tools")  # the git-tracked snapshot of the shipped set (reference only here)
 
 from desc_map import M as DESCMAP
 
@@ -103,7 +111,7 @@ def build():
 
 if __name__ == "__main__":
     total = build()
-    assert len(total) == 100, "expected 100 tools, got %d" % len(total)
+    assert len(total) == 100, "expected 100 tools, got %d — the scratch source dir is pruned; use gen_v3.py" % len(total)
     n = len(glob.glob(os.path.join(OUT, "**", "*.html"), recursive=True))
     print("html files on disk (incl landing):", n)
     manifest = {"count": len(total), "tools": sorted(total)}

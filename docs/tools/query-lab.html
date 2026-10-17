@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Query String Lab (decoder) · Toolbench</title>
+<title>Query String Lab · Toolbench</title>
 <style>
 :root{--bg:#0e0f11;--panel:#15171a;--panel2:#1b1e22;--line:#282c32;--ink:#ecebe6;--mut:#8f949b;
 --acc:#6fb3d2;--mono:ui-monospace,'Cascadia Mono','JetBrains Mono','SF Mono',Consolas,monospace;
@@ -34,9 +34,9 @@ button:hover{filter:brightness(1.12)}button.ghost{background:var(--panel2);color
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style></head><body>
 <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
-<div class="mid"><div class="cat">Developer</div><h1>Query String Lab (decoder)</h1><p class="desc">Paste a URL or bare query — decode to a table, or rebuild from edits.</p></div>
+<div class="mid"><div class="cat">Developer</div><h1>Query String Lab</h1><p class="desc">Paste a URL or bare query — decode to a table, or rebuild from edits</p></div>
 <a class="tag" href="../index.html">TOOLBENCH</a></header>
-<main><div class="fld grow"><label for="ta">URL or query</label><textarea id="ta" ></textarea></div><div class="row"><button data-act="decode">Decode</button><button data-act="encode">Encode</button><button data-act="copy">Copy</button></div><div id="out"></div><p class="hint"><b>How to use.</b> Edit either half and the other re-derives; Copy takes the current half, ⌄ swaps direction.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></main>
+<main><div class="fld grow"><label for="ta">URL or query</label><textarea id="ta" ></textarea></div><div class="row"><button data-act="decode">Decode</button><button data-act="encode">Encode</button><button data-act="copy">Copy</button></div><div id="out"></div><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></main>
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const V=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};

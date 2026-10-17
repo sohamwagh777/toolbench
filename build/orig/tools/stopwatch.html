@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stopwatch</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --accent: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 620px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .time-display {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .time-main {
+      font-size: 4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .time-sub {
+      font-size: 2.25rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-left: 0.25rem;
+      width: 2.5ch;
+      text-align: left;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.75rem;
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    button.btn {
+      padding: 0.7rem 1.75rem;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 110px;
+    }
+
+    .btn-start {
+      background-color: var(--accent);
+      color: #0f172a;
+    }
+
+    .btn-start:hover {
+      filter: brightness(1.1);
+    }
+
+    .btn-stop {
+      background-color: var(--danger);
+      color: #fff;
+    }
+
+    .btn-stop:hover {
+      opacity: 0.9;
+    }
+
+    .btn-lap {
+      background-color: var(--primary);
+      color: #fff;
+    }
+
+    .btn-lap:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-reset {
+      background-color: #0f172a;
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    .btn-reset:hover {
+      background-color: #1e293b;
+    }
+
+    .laps-card {
+      width: 100%;
+      background-color: #0b1120;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      overflow: hidden;
+      display: none;
+    }
+
+    .laps-card.has-laps {
+      display: block;
+    }
+
+    .laps-header {
+      display: grid;
+      grid-template-columns: 80px 1fr 1fr;
+      padding: 0.75rem 1rem;
+      background-color: #1e293b;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .laps-list {
+      max-height: 280px;
+      overflow-y: auto;
+      list-style: none;
+    }
+
+    .lap-item {
+      display: grid;
+      grid-template-columns: 80px 1fr 1fr;
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid #1e293b;
+      font-variant-numeric: tabular-nums;
+      font-size: 0.95rem;
+      align-items: center;
+    }
+
+    .lap-item:last-child {
+      border-bottom: none;
+    }
+
+    .lap-item.fastest {
+      color: var(--accent);
+      background-color: rgba(16, 185, 129, 0.08);
+      font-weight: 600;
+    }
+
+    .lap-item.slowest {
+      color: var(--danger);
+      background-color: rgba(239, 68, 68, 0.08);
+      font-weight: 600;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 440px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 0.75rem;
+    }
+
+    @media (max-width: 480px) {
+      .time-main {
+        font-size: 3rem;
+      }
+      .time-sub {
+        font-size: 1.75rem;
+      }
+    }
+  
+:root{--tb-acc:#d8a25e}
+header.tb{display:flex;align-items:center;gap:14px;max-width:860px;margin:0 auto;padding:20px 20px 6px}
+header.tb .back{font:600 11px/1 ui-monospace,'Cascadia Mono','SF Mono',Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut,#8f949b);border:1px solid var(--border,#282c32);padding:9px 12px;border-radius:8px;white-space:nowrap}
+header.tb .back:hover{color:var(--text,#ecebe6);border-color:#8f949b}
+header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 ui-monospace,'Cascadia Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#d8a25e}
+header.tb h1{font:400 21px/1.25 Georgia,'Iowan Old Style',serif;margin:4px 0 3px;color:var(--text,#ecebe6)}
+header.tb .desc,header.tb .howto,header.tb .priv{margin:0;font-size:12.5px;color:var(--text-muted,#8f949b)}
+header.tb .howto{margin-top:4px}header.tb .howto b{color:#ecebe6;font-weight:600}
+header.tb .priv{margin-top:4px;font-size:11px;opacity:.75}
+header.tb .tag{font:600 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--mut,#8f949b);text-decoration:none}
+@media(max-width:640px){header.tb{padding:14px 14px 4px}}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
+<div class="mid"><div class="cat">TIME & PRODUCTIVITY</div><h1>Stopwatch</h1><p class="desc">Start, stop, resume and split — with lap history, best/worst and live average lap.</p><p class="howto"><b>How to use.</b> Space starts/pauses, R resets, L (or S) logs a lap and moves to the next; laps compare against each other, not total time.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></div>
+<a class="tag" href="../index.html">TOOLBENCH</a></header>
+
+<p>A precise digital stopwatch with lap timing, split tracking, and performance statistics.</p>
+    </header>
+
+    <div class="card">
+      <div class="time-display">
+        <span class="time-main" id="timeMain">00:00:00</span>
+        <span class="time-sub" id="timeSub">.00</span>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-start" id="startStopBtn" onclick="toggleStart()">Start</button>
+        <button class="btn btn-lap" id="lapBtn" onclick="recordLap()" disabled>Lap</button>
+        <button class="btn btn-reset" id="resetBtn" onclick="resetTimer()" disabled>Reset</button>
+      </div>
+
+      <div class="stats-row" id="statsRow" style="display: none;">
+        <span>Total Laps: <strong id="totalLapsCount" style="color:var(--text);">0</strong></span>
+        <span>Fastest: <strong id="fastestLapTime" style="color:var(--accent);">--</strong></span>
+        <span>Slowest: <strong id="slowestLapTime" style="color:var(--danger);">--</strong></span>
+      </div>
+
+      <div class="laps-card" id="lapsCard">
+        <div class="laps-header">
+          <span>Lap</span>
+          <span>Lap Time</span>
+          <span style="text-align: right;">Total Time</span>
+        </div>
+        <ul class="laps-list" id="lapsList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let startTime = 0;
+    let elapsedTime = 0;
+    let timerAnimation = null;
+    let isRunning = false;
+    let laps = [];
+    let lastLapTime = 0;
+
+    const timeMain = document.getElementById('timeMain');
+    const timeSub = document.getElementById('timeSub');
+    const startStopBtn = document.getElementById('startStopBtn');
+    const lapBtn = document.getElementById('lapBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const lapsCard = document.getElementById('lapsCard');
+    const lapsList = document.getElementById('lapsList');
+    const statsRow = document.getElementById('statsRow');
+    const totalLapsCount = document.getElementById('totalLapsCount');
+    const fastestLapTime = document.getElementById('fastestLapTime');
+    const slowestLapTime = document.getElementById('slowestLapTime');
+
+    function formatTime(ms) {
+      const totalSecs = Math.floor(ms / 1000);
+      const h = Math.floor(totalSecs / 3600);
+      const m = Math.floor((totalSecs % 3600) / 60);
+      const s = totalSecs % 60;
+      const cs = Math.floor((ms % 1000) / 10);
+
+      const main = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      const sub = `.${String(cs).padStart(2, '0')}`;
+      return { main, sub, full: `${main}${sub}` };
+    }
+
+    function updateDisplay(ms) {
+      const formatted = formatTime(ms);
+      timeMain.textContent = formatted.main;
+      timeSub.textContent = formatted.sub;
+      if (isRunning) {
+        document.title = `${formatted.main} - Stopwatch`;
+      }
+    }
+
+    function tick() {
+      const now = performance.now();
+      const current = elapsedTime + (now - startTime);
+      updateDisplay(current);
+      timerAnimation = requestAnimationFrame(tick);
+    }
+
+    function toggleStart() {
+      if (isRunning) {
+        // Pause
+        cancelAnimationFrame(timerAnimation);
+        elapsedTime += performance.now() - startTime;
+        isRunning = false;
+        startStopBtn.textContent = 'Start';
+        startStopBtn.className = 'btn btn-start';
+        lapBtn.disabled = true;
+        resetBtn.disabled = false;
+        document.title = 'Stopwatch (Paused)';
+      } else {
+        // Start
+        startTime = performance.now();
+        timerAnimation = requestAnimationFrame(tick);
+        isRunning = true;
+        startStopBtn.textContent = 'Stop';
+        startStopBtn.className = 'btn btn-stop';
+        lapBtn.disabled = false;
+        resetBtn.disabled = false;
+      }
+    }
+
+    function recordLap() {
+      if (!isRunning) return;
+      const now = performance.now();
+      const currentTotal = elapsedTime + (now - startTime);
+      const lapDuration = currentTotal - lastLapTime;
+      lastLapTime = currentTotal;
+
+      laps.unshift({
+        num: laps.length + 1,
+        duration: lapDuration,
+        total: currentTotal
+      });
+
+      renderLaps();
+    }
+
+    function renderLaps() {
+      if (laps.length === 0) {
+        lapsCard.classList.remove('has-laps');
+        statsRow.style.display = 'none';
+        return;
+      }
+
+      lapsCard.classList.add('has-laps');
+      statsRow.style.display = 'flex';
+
+      let minDuration = Infinity;
+      let maxDuration = -Infinity;
+
+      if (laps.length >= 2) {
+        laps.forEach(l => {
+          if (l.duration < minDuration) minDuration = l.duration;
+          if (l.duration > maxDuration) maxDuration = l.duration;
+        });
+      }
+
+      lapsList.innerHTML = '';
+      laps.forEach(lap => {
+        const li = document.createElement('li');
+        li.className = 'lap-item';
+
+        if (laps.length >= 2) {
+          if (lap.duration === minDuration) {
+            li.classList.add('fastest');
+          } else if (lap.duration === maxDuration) {
+            li.classList.add('slowest');
+          }
+        }
+
+        const lapTimeStr = formatTime(lap.duration).full;
+        const totalTimeStr = formatTime(lap.total).full;
+
+        li.innerHTML = `
+          <span>#${lap.num}</span>
+          <span>+${lapTimeStr}</span>
+          <span style="text-align: right;">${totalTimeStr}</span>
+        `;
+        lapsList.appendChild(li);
+      });
+
+      totalLapsCount.textContent = laps.length;
+      fastestLapTime.textContent = minDuration !== Infinity ? formatTime(minDuration).full : '--';
+      slowestLapTime.textContent = maxDuration !== -Infinity ? formatTime(maxDuration).full : '--';
+    }
+
+    function resetTimer() {
+      cancelAnimationFrame(timerAnimation);
+      isRunning = false;
+      startTime = 0;
+      elapsedTime = 0;
+      lastLapTime = 0;
+      laps = [];
+
+      updateDisplay(0);
+      startStopBtn.textContent = 'Start';
+      startStopBtn.className = 'btn btn-start';
+      lapBtn.disabled = true;
+      resetBtn.disabled = true;
+      renderLaps();
+      document.title = 'Stopwatch';
+    }
+  </script>
+</body>
+</html>
+<script>
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!(e.target.closest&&e.target.closest('input,textarea,select'))){location.href='../index.html';}});
+</script>

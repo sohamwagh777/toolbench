@@ -2,7 +2,7 @@
 """Reskin pass for Toolbench ported pages (the 50 'ported' tools copied verbatim
 from scratch in the first build — mixed Tailwind-slate look).
 
-Run AFTER gen_tools.py (it wipes ../out and rebuilds it, so this must re-run too).
+Reference only — kept for history. Current pipeline = gen_v3.py (checks + copies; never blind-injects).
 
 Per ported file:
  - strip the old ad-hoc <header>/<h1>/<p class=subtitle> block

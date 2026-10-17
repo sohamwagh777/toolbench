@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Base64 Codec</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card-inner: #0f172a;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --accent: #10b981;
+      --danger: #ef4444;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 860px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .options-bar {
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .custom-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: var(--text);
+      user-select: none;
+    }
+
+    .custom-check input {
+      accent-color: var(--primary);
+      width: 1rem;
+      height: 1rem;
+      cursor: pointer;
+    }
+
+    .codec-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+
+    .panel {
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .panel-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .badge {
+      background-color: var(--border);
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+      font-weight: 500;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background-color: var(--border);
+      color: var(--text);
+      border: 1px solid transparent;
+      padding: 0.45rem 0.85rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 0.825rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      background-color: #475569;
+    }
+
+    button.primary {
+      background-color: var(--primary);
+    }
+
+    button.primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    button.accent {
+      background-color: #059669;
+    }
+
+    button.accent:hover {
+      background-color: var(--accent);
+    }
+
+    textarea {
+      width: 100%;
+      height: 160px;
+      background-color: var(--card-inner);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.85rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .action-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .error-banner {
+      background-color: rgba(239, 68, 68, 0.15);
+      border: 1px solid var(--danger);
+      color: #fca5a5;
+      padding: 0.65rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      display: none;
+    }
+
+    .error-banner.show {
+      display: block;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      background-color: var(--accent);
+      color: #0f172a;
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.25s ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  
+:root{--tb-acc:#d8a25e}
+header.tb{display:flex;align-items:center;gap:14px;max-width:860px;margin:0 auto;padding:20px 20px 6px}
+header.tb .back{font:600 11px/1 ui-monospace,'Cascadia Mono','SF Mono',Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut,#8f949b);border:1px solid var(--border,#282c32);padding:9px 12px;border-radius:8px;white-space:nowrap}
+header.tb .back:hover{color:var(--text,#ecebe6);border-color:#8f949b}
+header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 ui-monospace,'Cascadia Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#d8a25e}
+header.tb h1{font:400 21px/1.25 Georgia,'Iowan Old Style',serif;margin:4px 0 3px;color:var(--text,#ecebe6)}
+header.tb .desc,header.tb .howto,header.tb .priv{margin:0;font-size:12.5px;color:var(--text-muted,#8f949b)}
+header.tb .howto{margin-top:4px}header.tb .howto b{color:#ecebe6;font-weight:600}
+header.tb .priv{margin-top:4px;font-size:11px;opacity:.75}
+header.tb .tag{font:600 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--mut,#8f949b);text-decoration:none}
+@media(max-width:640px){header.tb{padding:14px 14px 4px}}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
+<div class="mid"><div class="cat">ENCODING & HASHING</div><h1>Base64 Codec</h1><p class="desc">Encode text to Base64 or decode it back; file upload and drag-and-drop supported.</p><p class="howto"><b>How to use.</b> Paste text (or drop a file) on one side, hit Encode or Decode; Copy, Clear and Swap sit under each pane. Non-UTF8 bytes may garble on decode.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></div>
+<a class="tag" href="../index.html">TOOLBENCH</a></header>
+
+
+    </header>
+
+    <div class="options-bar">
+      <div class="checkbox-group">
+        <label class="custom-check">
+          <input type="checkbox" id="opt-url-safe">
+          <span>URL-Safe (RFC 4648 §5: - and _ )</span>
+        </label>
+        <label class="custom-check">
+          <input type="checkbox" id="opt-strip-padding">
+          <span>Omit Padding (=)</span>
+        </label>
+        <label class="custom-check">
+          <input type="checkbox" id="opt-live" checked>
+          <span>Live Convert</span>
+        </label>
+      </div>
+      <div>
+        <button id="btn-sample">Sample Text</button>
+      </div>
+    </div>
+
+    <div id="error-box" class="error-banner"></div>
+
+    <div class="codec-grid">
+      <!-- Input / Text Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>Plain Text / Decoded Input</span>
+            <span class="badge" id="plain-size">0 bytes</span>
+          </div>
+          <div class="btn-group">
+            <button class="primary" id="btn-encode">Encode &darr;</button>
+            <button id="btn-copy-plain">Copy</button>
+            <button id="btn-clear-plain">Clear</button>
+          </div>
+        </div>
+        <textarea id="plain-input" placeholder="Enter plain text to encode into Base64 (e.g. Hello, world! 🚀)..."></textarea>
+      </div>
+
+      <!-- Action Center -->
+      <div class="action-row">
+        <button id="btn-swap" class="accent">&uarr;&darr; Swap Input &amp; Output</button>
+        <button id="btn-clear-all">Clear All</button>
+      </div>
+
+      <!-- Base64 Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>Base64 Encoded</span>
+            <span class="badge" id="b64-size">0 bytes</span>
+          </div>
+          <div class="btn-group">
+            <button class="primary" id="btn-decode">Decode &uarr;</button>
+            <button id="btn-copy-b64">Copy</button>
+            <button id="btn-clear-b64">Clear</button>
+          </div>
+        </div>
+        <textarea id="b64-input" placeholder="Enter Base64 to decode back into plain text..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Copied to clipboard!</div>
+
+  <script>
+    const plainInput = document.getElementById('plain-input');
+    const b64Input = document.getElementById('b64-input');
+    const optUrlSafe = document.getElementById('opt-url-safe');
+    const optStripPadding = document.getElementById('opt-strip-padding');
+    const optLive = document.getElementById('opt-live');
+    const plainSize = document.getElementById('plain-size');
+    const b64Size = document.getElementById('b64-size');
+    const errorBox = document.getElementById('error-box');
+    const toast = document.getElementById('toast');
+
+    let activeDirection = 'encode'; // 'encode' or 'decode'
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    function showError(msg) {
+      if (msg) {
+        errorBox.textContent = msg;
+        errorBox.classList.add('show');
+      } else {
+        errorBox.textContent = '';
+        errorBox.classList.remove('show');
+      }
+    }
+
+    function utf8ToBase64(str) {
+      const encoder = new TextEncoder();
+      const bytes = encoder.encode(str);
+      let binary = '';
+      const len = bytes.byteLength;
+      for (let i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      let b64 = btoa(binary);
+      if (optUrlSafe.checked) {
+        b64 = b64.replace(/\+/g, '-').replace(/\//g, '_');
+      }
+      if (optStripPadding.checked) {
+        b64 = b64.replace(/=+$/, '');
+      }
+      return b64;
+    }
+
+    function base64ToUtf8(b64) {
+      let standard = b64.trim().replace(/-/g, '+').replace(/_/g, '/');
+      while (standard.length % 4) {
+        standard += '=';
+      }
+      const binary = atob(standard);
+      const len = binary.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      const decoder = new TextDecoder('utf-8', { fatal: true });
+      return decoder.decode(bytes);
+    }
+
+    function updateSizes() {
+      const encoder = new TextEncoder();
+      const plainBytes = encoder.encode(plainInput.value).length;
+      plainSize.textContent = `${plainBytes.toLocaleString()} bytes`;
+      b64Size.textContent = `${b64Input.value.length.toLocaleString()} bytes`;
+    }
+
+    function doEncode() {
+      showError('');
+      if (!plainInput.value) {
+        b64Input.value = '';
+        updateSizes();
+        return;
+      }
+      try {
+        b64Input.value = utf8ToBase64(plainInput.value);
+        updateSizes();
+      } catch (e) {
+        showError('Encoding error: ' + e.message);
+      }
+    }
+
+    function doDecode() {
+      showError('');
+      if (!b64Input.value.trim()) {
+        plainInput.value = '';
+        updateSizes();
+        return;
+      }
+      try {
+        plainInput.value = base64ToUtf8(b64Input.value);
+        updateSizes();
+      } catch (e) {
+        showError('Decoding error: Invalid Base64 input string (' + e.message + ')');
+      }
+    }
+
+    plainInput.addEventListener('input', () => {
+      activeDirection = 'encode';
+      if (optLive.checked) doEncode();
+      else updateSizes();
+    });
+
+    b64Input.addEventListener('input', () => {
+      activeDirection = 'decode';
+      if (optLive.checked) doDecode();
+      else updateSizes();
+    });
+
+    optUrlSafe.addEventListener('change', () => {
+      if (activeDirection === 'encode' || optLive.checked) doEncode();
+    });
+
+    optStripPadding.addEventListener('change', () => {
+      if (activeDirection === 'encode' || optLive.checked) doEncode();
+    });
+
+    document.getElementById('btn-encode').addEventListener('click', doEncode);
+    document.getElementById('btn-decode').addEventListener('click', doDecode);
+
+    document.getElementById('btn-swap').addEventListener('click', () => {
+      const temp = plainInput.value;
+      plainInput.value = b64Input.value;
+      b64Input.value = temp;
+      updateSizes();
+      showToast('Swapped input and output');
+    });
+
+    document.getElementById('btn-sample').addEventListener('click', () => {
+      plainInput.value = "Hello, World! 🚀 Base64 encoding with UTF-8 support: café, résumé, 12345.";
+      activeDirection = 'encode';
+      doEncode();
+    });
+
+    async function copyText(text) {
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('Copied to clipboard!');
+      } catch (e) {
+        showToast('Copy error');
+      }
+    }
+
+    document.getElementById('btn-copy-plain').addEventListener('click', () => copyText(plainInput.value));
+    document.getElementById('btn-copy-b64').addEventListener('click', () => copyText(b64Input.value));
+
+    document.getElementById('btn-clear-plain').addEventListener('click', () => {
+      plainInput.value = '';
+      updateSizes();
+      showError('');
+    });
+
+    document.getElementById('btn-clear-b64').addEventListener('click', () => {
+      b64Input.value = '';
+      updateSizes();
+      showError('');
+    });
+
+    document.getElementById('btn-clear-all').addEventListener('click', () => {
+      plainInput.value = '';
+      b64Input.value = '';
+      updateSizes();
+      showError('');
+    });
+
+    updateSizes();
+  </script>
+</body>
+</html>
+<script>
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!(e.target.closest&&e.target.closest('input,textarea,select'))){location.href='../index.html';}});
+</script>

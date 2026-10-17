@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Byte-Size Converter</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --accent: #10b981;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+    .container {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    header {
+      text-align: center;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+    }
+    header h1 {
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem;
+    }
+    .input-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      align-items: center;
+    }
+    @media (max-width: 500px) {
+      .input-row {
+        flex-direction: column;
+      }
+    }
+    .val-input-wrapper {
+      flex: 2;
+      width: 100%;
+    }
+    .unit-select-wrapper {
+      flex: 1;
+      width: 100%;
+    }
+    input[type="number"] {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1.25rem;
+      font-weight: 600;
+      padding: 0.65rem 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="number"]:focus {
+      border-color: var(--primary);
+    }
+    select {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1.05rem;
+      font-weight: 600;
+      padding: 0.75rem 0.85rem;
+      outline: none;
+      cursor: pointer;
+    }
+    .table-wrapper {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      text-align: left;
+    }
+    th, td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    th {
+      background: #0f172a;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .mono {
+      font-family: monospace;
+      font-size: 0.95rem;
+    }
+    .val-highlight {
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .context-box {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .context-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+    .context-text {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .context-text strong {
+      color: var(--accent);
+    }
+    .presets-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.6rem;
+    }
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+    @media (max-width: 480px) {
+      .presets-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .preset-btn {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .preset-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+  
+:root{--tb-acc:#d8a25e}
+header.tb{display:flex;align-items:center;gap:14px;max-width:860px;margin:0 auto;padding:20px 20px 6px}
+header.tb .back{font:600 11px/1 ui-monospace,'Cascadia Mono','SF Mono',Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut,#8f949b);border:1px solid var(--border,#282c32);padding:9px 12px;border-radius:8px;white-space:nowrap}
+header.tb .back:hover{color:var(--text,#ecebe6);border-color:#8f949b}
+header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 ui-monospace,'Cascadia Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#d8a25e}
+header.tb h1{font:400 21px/1.25 Georgia,'Iowan Old Style',serif;margin:4px 0 3px;color:var(--text,#ecebe6)}
+header.tb .desc,header.tb .howto,header.tb .priv{margin:0;font-size:12.5px;color:var(--text-muted,#8f949b)}
+header.tb .howto{margin-top:4px}header.tb .howto b{color:#ecebe6;font-weight:600}
+header.tb .priv{margin-top:4px;font-size:11px;opacity:.75}
+header.tb .tag{font:600 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--mut,#8f949b);text-decoration:none}
+@media(max-width:640px){header.tb{padding:14px 14px 4px}}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
+<div class="mid"><div class="cat">ENCODING & HASHING</div><h1>Byte-Size Converter</h1><p class="desc">Convert B/KB/MB/GB/TB and their 1024-based KiB/MiB/GiB/TiB twins.</p><p class="howto"><b>How to use.</b> Enter an amount, pick the source unit, then Copy any row or the whole list.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></div>
+<a class="tag" href="../index.html">TOOLBENCH</a></header>
+
+<p>Convert digital data storage amounts between bits, bytes, SI decimal, and IEC binary units.</p>
+    </header>
+
+    <div class="card">
+      <div class="input-row">
+        <div class="val-input-wrapper">
+          <input type="number" id="inputVal" value="1" min="0" step="any">
+        </div>
+        <div class="unit-select-wrapper">
+          <select id="inputUnit">
+            <option value="b">Bits (b)</option>
+            <option value="B">Bytes (B)</option>
+            <option value="KB">Kilobytes (KB, 10³)</option>
+            <option value="KiB">Kibibytes (KiB, 2¹⁰)</option>
+            <option value="MB">Megabytes (MB, 10⁶)</option>
+            <option value="MiB">Mebibytes (MiB, 2²⁰)</option>
+            <option value="GB" selected>Gigabytes (GB, 10⁹)</option>
+            <option value="GiB">Gibibytes (GiB, 2³⁰)</option>
+            <option value="TB">Terabytes (TB, 10¹²)</option>
+            <option value="TiB">Tebibytes (TiB, 2⁴⁰)</option>
+            <option value="PB">Petabytes (PB, 10¹⁵)</option>
+            <option value="PiB">Pebibytes (PiB, 2⁵⁰)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Standard</th>
+              <th>Unit</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody id="conversionTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="context-box">
+        <div class="context-title">Real-World Capacity Context</div>
+        <div class="context-text" id="contextText"></div>
+      </div>
+
+      <div class="presets-title">Common Storage Presets</div>
+      <div class="presets-grid">
+        <button type="button" class="preset-btn" data-val="1.44" data-unit="MB">1.44 MB Floppy</button>
+        <button type="button" class="preset-btn" data-val="700" data-unit="MB">700 MB CD-ROM</button>
+        <button type="button" class="preset-btn" data-val="4.7" data-unit="GB">4.7 GB DVD</button>
+        <button type="button" class="preset-btn" data-val="25" data-unit="GB">25 GB Blu-Ray</button>
+        <button type="button" class="preset-btn" data-val="512" data-unit="GB">512 GB SSD</button>
+        <button type="button" class="preset-btn" data-val="2" data-unit="TB">2 TB Hard Drive</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const MULTIPLIERS_TO_BYTES = {
+      b: 0.125,
+      B: 1,
+      KB: 1e3,
+      KiB: 1024,
+      MB: 1e6,
+      MiB: 1024 ** 2,
+      GB: 1e9,
+      GiB: 1024 ** 3,
+      TB: 1e12,
+      TiB: 1024 ** 4,
+      PB: 1e15,
+      PiB: 1024 ** 5
+    };
+
+    const UNITS = [
+      { key: 'b', name: 'Bits', std: 'Raw Data', mult: 0.125 },
+      { key: 'B', name: 'Bytes', std: 'Base Unit', mult: 1 },
+      { key: 'KB', name: 'Kilobytes (KB)', std: 'Decimal (SI, 1,000)', mult: 1e3 },
+      { key: 'KiB', name: 'Kibibytes (KiB)', std: 'Binary (IEC, 1,024)', mult: 1024 },
+      { key: 'MB', name: 'Megabytes (MB)', std: 'Decimal (SI)', mult: 1e6 },
+      { key: 'MiB', name: 'Mebibytes (MiB)', std: 'Binary (IEC)', mult: 1024 ** 2 },
+      { key: 'GB', name: 'Gigabytes (GB)', std: 'Decimal (SI)', mult: 1e9 },
+      { key: 'GiB', name: 'Gibibytes (GiB)', std: 'Binary (IEC)', mult: 1024 ** 3 },
+      { key: 'TB', name: 'Terabytes (TB)', std: 'Decimal (SI)', mult: 1e12 },
+      { key: 'TiB', name: 'Tebibytes (TiB)', std: 'Binary (IEC)', mult: 1024 ** 4 },
+      { key: 'PB', name: 'Petabytes (PB)', std: 'Decimal (SI)', mult: 1e15 },
+      { key: 'PiB', name: 'Pebibytes (PiB)', std: 'Binary (IEC)', mult: 1024 ** 5 }
+    ];
+
+    const inputVal = document.getElementById('inputVal');
+    const inputUnit = document.getElementById('inputUnit');
+    const tableBody = document.getElementById('conversionTableBody');
+    const contextText = document.getElementById('contextText');
+
+    function fmtSize(num) {
+      if (isNaN(num) || !isFinite(num)) return '—';
+      if (num === 0) return '0';
+      if (num >= 1e9 || num < 1e-4) {
+        return num.toExponential(4);
+      }
+      return num.toLocaleString('en-US', { maximumFractionDigits: 6 });
+    }
+
+    function update() {
+      const val = parseFloat(inputVal.value);
+      const unit = inputUnit.value;
+
+      if (isNaN(val) || val < 0) {
+        tableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: var(--text-muted);">Please enter a valid positive size.</td></tr>';
+        contextText.textContent = '—';
+        return;
+      }
+
+      const totalBytes = val * MULTIPLIERS_TO_BYTES[unit];
+
+      tableBody.innerHTML = '';
+      UNITS.forEach(u => {
+        const converted = totalBytes / u.mult;
+        const isCurrent = u.key === unit;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${u.std}</td>
+          <td><strong>${u.name}</strong></td>
+          <td class="mono ${isCurrent ? 'val-highlight' : ''}">${fmtSize(converted)} ${u.key}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+
+      // Storage context
+      const mp3Songs = Math.floor(totalBytes / (4 * 1024 * 1024));
+      const photos = Math.floor(totalBytes / (5 * 1024 * 1024));
+      const moviesHd = (totalBytes / (4.5 * 1024 * 1024 * 1024)).toFixed(1);
+      const textBooks = Math.floor(totalBytes / (2 * 1024 * 1024));
+
+      contextText.innerHTML = `
+        This is roughly equivalent to:<br>
+        • <strong>${photos.toLocaleString()}</strong> 12MP digital photos (~5 MB each)<br>
+        • <strong>${mp3Songs.toLocaleString()}</strong> standard MP3 audio tracks (~4 MB each)<br>
+        • <strong>${moviesHd}</strong> Full HD movies (~4.5 GB each)<br>
+        • <strong>${textBooks.toLocaleString()}</strong> full-length digital textbooks (~2 MB each)
+      `;
+    }
+
+    inputVal.addEventListener('input', update);
+    inputUnit.addEventListener('change', update);
+
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        inputVal.value = btn.dataset.val;
+        inputUnit.value = btn.dataset.unit;
+        update();
+      });
+    });
+
+    update();
+  </script>
+</body>
+</html>
+<script>
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!(e.target.closest&&e.target.closest('input,textarea,select'))){location.href='../index.html';}});
+</script>

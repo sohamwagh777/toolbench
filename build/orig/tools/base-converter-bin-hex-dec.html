@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Base Converter (Bin-Hex-Dec)</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --accent: #10b981;
+      --danger: #ef4444;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+    .container {
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    header {
+      text-align: center;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+    }
+    header h1 {
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem;
+    }
+    .inputs-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      margin-bottom: 1.5rem;
+    }
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .radix-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--primary);
+      background: rgba(59, 130, 246, 0.12);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+    }
+    .input-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+    input[type="text"] {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1.15rem;
+      font-family: monospace;
+      padding: 0.65rem 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="text"]:focus {
+      border-color: var(--primary);
+    }
+    input.error {
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, 0.05);
+    }
+    .btn-copy {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0 0.85rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-copy:hover {
+      border-color: var(--primary);
+      color: var(--text);
+    }
+    .custom-base-select {
+      width: 90px;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 0 0.5rem;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .info-card {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.875rem;
+    }
+    .info-label {
+      color: var(--text-muted);
+    }
+    .info-val {
+      font-weight: 600;
+      font-family: monospace;
+      color: var(--accent);
+    }
+    .bits-display {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.6rem;
+      font-family: monospace;
+      font-size: 0.95rem;
+      word-break: break-all;
+      color: #93c5fd;
+      letter-spacing: 0.05em;
+    }
+    .presets-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.6rem;
+    }
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+    }
+    @media (max-width: 480px) {
+      .presets-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .preset-btn {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 0.25rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .preset-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+  
+:root{--tb-acc:#d8a25e}
+header.tb{display:flex;align-items:center;gap:14px;max-width:860px;margin:0 auto;padding:20px 20px 6px}
+header.tb .back{font:600 11px/1 ui-monospace,'Cascadia Mono','SF Mono',Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut,#8f949b);border:1px solid var(--border,#282c32);padding:9px 12px;border-radius:8px;white-space:nowrap}
+header.tb .back:hover{color:var(--text,#ecebe6);border-color:#8f949b}
+header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 ui-monospace,'Cascadia Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#d8a25e}
+header.tb h1{font:400 21px/1.25 Georgia,'Iowan Old Style',serif;margin:4px 0 3px;color:var(--text,#ecebe6)}
+header.tb .desc,header.tb .howto,header.tb .priv{margin:0;font-size:12.5px;color:var(--text-muted,#8f949b)}
+header.tb .howto{margin-top:4px}header.tb .howto b{color:#ecebe6;font-weight:600}
+header.tb .priv{margin-top:4px;font-size:11px;opacity:.75}
+header.tb .tag{font:600 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--mut,#8f949b);text-decoration:none}
+@media(max-width:640px){header.tb{padding:14px 14px 4px}}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
+<div class="mid"><div class="cat">ENCODING & HASHING</div><h1>Base Converter (bin/hex/dec/oct + custom)</h1><p class="desc">Convert BigInt values between binary, hex, decimal, octal and any custom radix 2–36, with bit grouping and ASCII peek.</p><p class="howto"><b>How to use.</b> Edit any base field — everything recalculates from it. Pick a custom radix in the dropdown; blank or bad digits show an error flag instead of breaking.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></div>
+<a class="tag" href="../index.html">TOOLBENCH</a></header>
+
+<p>Convert numbers instantly across Decimal, Hexadecimal, Binary, Octal, and custom bases.</p>
+    </header>
+
+    <div class="card">
+      <div class="inputs-grid">
+        <div class="field-group">
+          <div class="label-row">
+            <label for="decInput">Decimal</label>
+            <span class="radix-tag">Base 10</span>
+          </div>
+          <div class="input-row">
+            <input type="text" id="decInput" value="255" spellcheck="false">
+            <button type="button" class="btn-copy" data-target="decInput">Copy</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="label-row">
+            <label for="hexInput">Hexadecimal</label>
+            <span class="radix-tag">Base 16</span>
+          </div>
+          <div class="input-row">
+            <input type="text" id="hexInput" value="FF" spellcheck="false">
+            <button type="button" class="btn-copy" data-target="hexInput">Copy</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="label-row">
+            <label for="binInput">Binary</label>
+            <span class="radix-tag">Base 2</span>
+          </div>
+          <div class="input-row">
+            <input type="text" id="binInput" value="11111111" spellcheck="false">
+            <button type="button" class="btn-copy" data-target="binInput">Copy</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="label-row">
+            <label for="octInput">Octal</label>
+            <span class="radix-tag">Base 8</span>
+          </div>
+          <div class="input-row">
+            <input type="text" id="octInput" value="377" spellcheck="false">
+            <button type="button" class="btn-copy" data-target="octInput">Copy</button>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="label-row">
+            <label for="customInput">Custom Radix</label>
+            <select id="customRadixSelect" class="custom-base-select">
+              <option value="3">Base 3</option>
+              <option value="4">Base 4</option>
+              <option value="5">Base 5</option>
+              <option value="6">Base 6</option>
+              <option value="7">Base 7</option>
+              <option value="12">Base 12</option>
+              <option value="20">Base 20</option>
+              <option value="32" selected>Base 32</option>
+              <option value="36">Base 36</option>
+            </select>
+          </div>
+          <div class="input-row">
+            <input type="text" id="customInput" value="7V" spellcheck="false">
+            <button type="button" class="btn-copy" data-target="customInput">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-row">
+          <span class="info-label">Bit Count:</span>
+          <span class="info-val" id="bitCount">8 bits</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">ASCII Representation:</span>
+          <span class="info-val" id="asciiChar">Non-printable</span>
+        </div>
+        <div>
+          <span class="info-label" style="display:block; margin-bottom: 0.35rem;">Grouped Nibbles (4-bit chunks):</span>
+          <div class="bits-display" id="groupedBits">1111 1111</div>
+        </div>
+      </div>
+
+      <div class="presets-title">Common Test Numbers</div>
+      <div class="presets-grid">
+        <button type="button" class="preset-btn" data-val="0">0</button>
+        <button type="button" class="preset-btn" data-val="42">42</button>
+        <button type="button" class="preset-btn" data-val="255">255 (0xFF)</button>
+        <button type="button" class="preset-btn" data-val="1024">1,024 (1K)</button>
+        <button type="button" class="preset-btn" data-val="65535">65,535 (16-bit)</button>
+        <button type="button" class="preset-btn" data-val="16777215">0xFFFFFF</button>
+        <button type="button" class="preset-btn" data-val="2147483647">INT32_MAX</button>
+        <button type="button" class="preset-btn" data-val="4294967295">UINT32_MAX</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const decInput = document.getElementById('decInput');
+    const hexInput = document.getElementById('hexInput');
+    const binInput = document.getElementById('binInput');
+    const octInput = document.getElementById('octInput');
+    const customInput = document.getElementById('customInput');
+    const customRadixSelect = document.getElementById('customRadixSelect');
+    const bitCountEl = document.getElementById('bitCount');
+    const asciiCharEl = document.getElementById('asciiChar');
+    const groupedBitsEl = document.getElementById('groupedBits');
+
+    function parseBigIntRadix(str, radix) {
+      str = str.trim().toLowerCase();
+      if (!str) return null;
+
+      let isNeg = false;
+      if (str.startsWith('-')) {
+        isNeg = true;
+        str = str.slice(1);
+      } else if (str.startsWith('+')) {
+        str = str.slice(1);
+      }
+
+      if (!str) return null;
+
+      const r = BigInt(radix);
+      let res = 0n;
+      const chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+
+      for (const ch of str) {
+        const digit = chars.indexOf(ch);
+        if (digit === -1 || digit >= radix) {
+          return null; // Invalid character for radix
+        }
+        res = res * r + BigInt(digit);
+      }
+
+      return isNeg ? -res : res;
+    }
+
+    function formatGroupedBits(binStr) {
+      if (!binStr || binStr === '0') return '0';
+      const clean = binStr.replace('-', '');
+      const padLength = Math.ceil(clean.length / 4) * 4;
+      const padded = clean.padStart(padLength, '0');
+      const chunks = [];
+      for (let i = 0; i < padded.length; i += 4) {
+        chunks.push(padded.slice(i, i + 4));
+      }
+      return (binStr.startsWith('-') ? '-' : '') + chunks.join(' ');
+    }
+
+    function updateFromValue(val, sourceKey) {
+      const inputs = {
+        dec: decInput,
+        hex: hexInput,
+        bin: binInput,
+        oct: octInput,
+        custom: customInput
+      };
+
+      // Clear error states
+      Object.values(inputs).forEach(inp => inp.classList.remove('error'));
+
+      if (val === null) {
+        if (sourceKey && inputs[sourceKey]) {
+          inputs[sourceKey].classList.add('error');
+        }
+        bitCountEl.textContent = '—';
+        asciiCharEl.textContent = '—';
+        groupedBitsEl.textContent = '—';
+        return;
+      }
+
+      const customRadix = Math.min(36, Math.max(2, parseInt(customRadixSelect.value, 10) || 36));
+
+      if (sourceKey !== 'dec') decInput.value = val.toString(10);
+      if (sourceKey !== 'hex') hexInput.value = val.toString(16).toUpperCase();
+      if (sourceKey !== 'bin') binInput.value = val.toString(2);
+      if (sourceKey !== 'oct') octInput.value = val.toString(8);
+      if (sourceKey !== 'custom') customInput.value = val.toString(customRadix).toUpperCase();
+
+      const binStr = val.toString(2);
+      const absBin = binStr.replace('-', '');
+      bitCountEl.textContent = `${absBin.length} bit${absBin.length === 1 ? '' : 's'}`;
+      groupedBitsEl.textContent = formatGroupedBits(binStr);
+
+      if (val >= 32n && val <= 126n) {
+        asciiCharEl.textContent = `'${String.fromCharCode(Number(val))}' (Code ${val})`;
+      } else if (val >= 0n && val < 32n) {
+        asciiCharEl.textContent = `Control Character (ASCII ${val})`;
+      } else {
+        asciiCharEl.textContent = 'Out of standard ASCII range (0–127)';
+      }
+    }
+
+    decInput.addEventListener('input', () => {
+      const text = decInput.value.trim();
+      if (!text) { updateFromValue(0n, 'dec'); return; }
+      try {
+        const val = BigInt(text);
+        updateFromValue(val, 'dec');
+      } catch {
+        updateFromValue(null, 'dec');
+      }
+    });
+
+    hexInput.addEventListener('input', () => {
+      const text = hexInput.value.trim();
+      if (!text) { updateFromValue(0n, 'hex'); return; }
+      const val = parseBigIntRadix(text, 16);
+      updateFromValue(val, 'hex');
+    });
+
+    binInput.addEventListener('input', () => {
+      const text = binInput.value.trim();
+      if (!text) { updateFromValue(0n, 'bin'); return; }
+      const val = parseBigIntRadix(text, 2);
+      updateFromValue(val, 'bin');
+    });
+
+    octInput.addEventListener('input', () => {
+      const text = octInput.value.trim();
+      if (!text) { updateFromValue(0n, 'oct'); return; }
+      const val = parseBigIntRadix(text, 8);
+      updateFromValue(val, 'oct');
+    });
+
+    customInput.addEventListener('input', () => {
+      const text = customInput.value.trim();
+      const r = parseInt(customRadixSelect.value, 10);
+      if (!text) { updateFromValue(0n, 'custom'); return; }
+      const val = parseBigIntRadix(text, r);
+      updateFromValue(val, 'custom');
+    });
+
+    customRadixSelect.addEventListener('change', () => {
+      try {
+        const val = BigInt(decInput.value);
+        updateFromValue(val, null);
+      } catch {
+        // keep current
+      }
+    });
+
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = BigInt(btn.dataset.val);
+        updateFromValue(val, null);
+      });
+    });
+
+    document.querySelectorAll('.btn-copy').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.dataset.target;
+        const target = document.getElementById(targetId);
+        if (target && target.value) {
+          navigator.clipboard.writeText(target.value);
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => btn.textContent = orig, 1200);
+        }
+      });
+    });
+
+    updateFromValue(255n, null);
+  </script>
+</body>
+</html>
+<script>
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!(e.target.closest&&e.target.closest('input,textarea,select'))){location.href='../index.html';}});
+</script>

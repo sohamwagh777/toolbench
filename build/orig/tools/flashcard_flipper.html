@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flashcard Flipper</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --success: #10b981;
+      --accent: #8b5cf6;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+    .container {
+      width: 100%;
+      max-width: 640px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    header { text-align: center; }
+    header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.35rem; }
+    header p { color: var(--text-muted); font-size: 0.95rem; }
+    .card-scene {
+      width: 100%;
+      height: 280px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+    .flashcard {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 16px;
+    }
+    .flashcard.is-flipped {
+      transform: rotateY(180deg);
+    }
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 16px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+    .card-front {
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      color: var(--text);
+    }
+    .card-back {
+      background: linear-gradient(145deg, #1e1b4b, #0f172a);
+      color: #e0e7ff;
+      transform: rotateY(180deg);
+      border-color: #4338ca;
+    }
+    .face-tag {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+    .card-back .face-tag { color: #a5b4fc; }
+    .card-content {
+      font-size: 1.35rem;
+      font-weight: 600;
+      line-height: 1.4;
+      max-height: 160px;
+      overflow-y: auto;
+      margin: auto 0;
+    }
+    .hint-tap {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .controls-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .nav-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .counter {
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    .btn-group { display: flex; gap: 0.5rem; }
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: background 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    button:hover { background: var(--primary-hover); }
+    button.btn-secondary { background: #334155; }
+    button.btn-secondary:hover { background: #475569; }
+    button.btn-success { background: #065f46; color: #a7f3d0; }
+    button.btn-success:hover { background: var(--success); color: white; }
+    .action-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      border-top: 1px solid var(--border);
+      padding-top: 0.75rem;
+    }
+    .add-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    input[type="text"] {
+      background: #0b1120;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.65rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    input[type="text"]:focus { border-color: var(--primary); }
+    details {
+      background: #0b1120;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem;
+    }
+    summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text);
+      user-select: none;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #0b1120;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+  
+:root{--tb-acc:#d8a25e}
+header.tb{display:flex;align-items:center;gap:14px;max-width:860px;margin:0 auto;padding:20px 20px 6px}
+header.tb .back{font:600 11px/1 ui-monospace,'Cascadia Mono','SF Mono',Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut,#8f949b);border:1px solid var(--border,#282c32);padding:9px 12px;border-radius:8px;white-space:nowrap}
+header.tb .back:hover{color:var(--text,#ecebe6);border-color:#8f949b}
+header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 ui-monospace,'Cascadia Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#d8a25e}
+header.tb h1{font:400 21px/1.25 Georgia,'Iowan Old Style',serif;margin:4px 0 3px;color:var(--text,#ecebe6)}
+header.tb .desc,header.tb .howto,header.tb .priv{margin:0;font-size:12.5px;color:var(--text-muted,#8f949b)}
+header.tb .howto{margin-top:4px}header.tb .howto b{color:#ecebe6;font-weight:600}
+header.tb .priv{margin-top:4px;font-size:11px;opacity:.75}
+header.tb .tag{font:600 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--mut,#8f949b);text-decoration:none}
+@media(max-width:640px){header.tb{padding:14px 14px 4px}}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
+<div class="mid"><div class="cat">TIME & PRODUCTIVITY</div><h1>Flashcard Flipper</h1><p class="desc">Ten-word deck with keyboard-first controls: Space flips, arrows move, S shuffles.</p><p class="howto"><b>How to use.</b> Space to flip, ←/→ for previous/next, S to shuffle; click a card or use the counter strip to jump.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></div>
+<a class="tag" href="../index.html">TOOLBENCH</a></header>
+
+<p>Study terms, definitions, and concepts with 3D interactive flashcards and keyboard shortcuts.</p>
+    </header>
+
+    <div class="card-scene" onclick="toggleFlip()">
+      <div id="flashcard" class="flashcard">
+        <div class="card-face card-front">
+          <span class="face-tag">Question / Prompt</span>
+          <div id="frontText" class="card-content">Loading...</div>
+          <span class="hint-tap">Click or press Space to flip ↺</span>
+        </div>
+        <div class="card-face card-back">
+          <span class="face-tag">Answer / Solution</span>
+          <div id="backText" class="card-content">Loading...</div>
+          <span class="hint-tap">Click or press Space to flip ↺</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-bar">
+      <div id="deckProgress" class="progress-fill"></div>
+    </div>
+
+    <div class="controls-panel">
+      <div class="nav-row">
+        <button class="btn-secondary" onclick="prevCard()">← Prev</button>
+        <div id="cardCounter" class="counter">Card 1 of 5</div>
+        <button class="btn-secondary" onclick="nextCard()">Next →</button>
+      </div>
+
+      <div class="action-row">
+        <div class="btn-group">
+          <button class="btn-secondary" onclick="shuffleCards()">🔀 Shuffle</button>
+          <button class="btn-secondary" onclick="deleteCurrentCard()">🗑 Delete</button>
+        </div>
+        <button id="masterBtn" class="btn-success" onclick="toggleMastered()">✓ Mark Mastered</button>
+      </div>
+
+      <details>
+        <summary>+ Add New Flashcard</summary>
+        <form class="add-form" onsubmit="addCard(event)" style="margin-top:0.75rem;">
+          <input type="text" id="newFront" placeholder="Front: Prompt or question..." required>
+          <input type="text" id="newBack" placeholder="Back: Answer or explanation..." required>
+          <button type="submit" style="align-self: flex-start;">Add to Deck</button>
+        </form>
+      </details>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'flashcard_flipper_deck_v1';
+    const defaultDeck = [
+      { front: 'What is Closure in JavaScript?', back: 'A function bundled together with references to its surrounding lexical environment.', mastered: false },
+      { front: 'What is the DOM?', back: 'Document Object Model: a programming API for HTML documents representing nodes as objects.', mastered: false },
+      { front: 'What does CSS stand for?', back: 'Cascading Style Sheets: a stylesheet language used for describing the presentation of a document.', mastered: false },
+      { front: 'Difference between localStorage & sessionStorage?', back: 'localStorage persists indefinitely across browser restarts; sessionStorage clears when tab closes.', mastered: false },
+      { front: 'What is an idempotent HTTP method?', back: 'A method (like GET, PUT, DELETE) where making multiple identical requests has the same effect as a single request.', mastered: false }
+    ];
+
+    let deck = [];
+    let currentIndex = 0;
+    let isFlipped = false;
+
+    function init() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        deck = saved ? JSON.parse(saved) : defaultDeck;
+      } catch (e) {
+        deck = defaultDeck;
+      }
+      if (deck.length === 0) deck = defaultDeck;
+      currentIndex = 0;
+      updateUI();
+    }
+
+    function saveDeck() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(deck));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function toggleFlip() {
+      isFlipped = !isFlipped;
+      document.getElementById('flashcard').classList.toggle('is-flipped', isFlipped);
+    }
+
+    function prevCard() {
+      if (deck.length === 0) return;
+      isFlipped = false;
+      document.getElementById('flashcard').classList.remove('is-flipped');
+      currentIndex = (currentIndex - 1 + deck.length) % deck.length;
+      updateUI();
+    }
+
+    function nextCard() {
+      if (deck.length === 0) return;
+      isFlipped = false;
+      document.getElementById('flashcard').classList.remove('is-flipped');
+      currentIndex = (currentIndex + 1) % deck.length;
+      updateUI();
+    }
+
+    function shuffleCards() {
+      for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+      }
+      currentIndex = 0;
+      isFlipped = false;
+      document.getElementById('flashcard').classList.remove('is-flipped');
+      saveDeck();
+      updateUI();
+    }
+
+    function toggleMastered() {
+      if (deck.length === 0) return;
+      deck[currentIndex].mastered = !deck[currentIndex].mastered;
+      saveDeck();
+      updateUI();
+    }
+
+    function deleteCurrentCard() {
+      if (deck.length <= 1) {
+        alert('Deck must contain at least one card.');
+        return;
+      }
+      deck.splice(currentIndex, 1);
+      if (currentIndex >= deck.length) currentIndex = deck.length - 1;
+      isFlipped = false;
+      document.getElementById('flashcard').classList.remove('is-flipped');
+      saveDeck();
+      updateUI();
+    }
+
+    function addCard(e) {
+      e.preventDefault();
+      const front = document.getElementById('newFront').value.trim();
+      const back = document.getElementById('newBack').value.trim();
+      if (!front || !back) return;
+      deck.push({ front, back, mastered: false });
+      document.getElementById('newFront').value = '';
+      document.getElementById('newBack').value = '';
+      saveDeck();
+      currentIndex = deck.length - 1;
+      isFlipped = false;
+      document.getElementById('flashcard').classList.remove('is-flipped');
+      updateUI();
+    }
+
+    function updateUI() {
+      if (deck.length === 0) return;
+      const card = deck[currentIndex];
+      document.getElementById('frontText').textContent = card.front;
+      document.getElementById('backText').textContent = card.back;
+      document.getElementById('cardCounter').textContent = `Card ${currentIndex + 1} of ${deck.length}`;
+
+      const masteredCount = deck.filter(c => c.mastered).length;
+      const pct = Math.round(((currentIndex + 1) / deck.length) * 100);
+      document.getElementById('deckProgress').style.width = `${pct}%`;
+
+      const masterBtn = document.getElementById('masterBtn');
+      if (card.mastered) {
+        masterBtn.textContent = '★ Mastered';
+        masterBtn.className = 'btn-success';
+      } else {
+        masterBtn.textContent = '☆ Mark Mastered';
+        masterBtn.className = 'btn-secondary';
+      }
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.code === 'Space') {
+        e.preventDefault();
+        toggleFlip();
+      } else if (e.code === 'ArrowRight') {
+        nextCard();
+      } else if (e.code === 'ArrowLeft') {
+        prevCard();
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
+<script>
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!(e.target.closest&&e.target.closest('input,textarea,select'))){location.href='../index.html';}});
+</script>

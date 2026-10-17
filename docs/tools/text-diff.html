@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Text Diff (LCS) · Toolbench</title>
+<title>Text Diff · Toolbench</title>
 <style>
 :root{--bg:#0e0f11;--panel:#15171a;--panel2:#1b1e22;--line:#282c32;--ink:#ecebe6;--mut:#8f949b;
 --acc:#d8a25e;--mono:ui-monospace,'Cascadia Mono','JetBrains Mono','SF Mono',Consolas,monospace;
@@ -34,9 +34,9 @@ button:hover{filter:brightness(1.12)}button.ghost{background:var(--panel2);color
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style></head><body>
 <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
-<div class="mid"><div class="cat">Text</div><h1>Text Diff (LCS)</h1><p class="desc">Line-by-line diff of two texts with + / - markers on a true LCS match.</p></div>
+<div class="mid"><div class="cat">Text</div><h1>Text Diff</h1><p class="desc">Line-by-line diff of two texts with + / - markers (LCS match).</p></div>
 <a class="tag" href="../index.html">TOOLBENCH</a></header>
-<main><section class="card"><div class="row"><div class="fld grow"><label for="a">Text A</label><textarea id="a" ></textarea></div><div class="fld grow"><label for="b">Text B</label><textarea id="b" ></textarea></div></div><div class="row"><button data-act="diff">Diff</button><button data-act="copy">Copy</button></div><div id="out"></div></section><p class="hint"><b>How to use.</b> Edit either side (or press Sample) — the diff re-renders as you type.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></main>
+<main><section class="card"><div class="row"><div class="fld grow"><label for="a">Text A</label><textarea id="a" ></textarea></div><div class="fld grow"><label for="b">Text B</label><textarea id="b" ></textarea></div></div><div class="row"><button data-act="diff">Diff</button><button data-act="copy">Copy</button></div><div id="out"></div></section><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></main>
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const V=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};

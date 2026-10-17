@@ -1,485 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UUID Generator</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --card-inner: #0f172a;
-      --border: #334155;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --primary: #3b82f6;
-      --primary-hover: #2563eb;
-      --accent: #10b981;
-      --danger: #ef4444;
-      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: var(--font);
-      background-color: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem 1rem;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 860px;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    header {
-      text-align: center;
-    }
-
-    h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      color: var(--text);
-    }
-
-    .subtitle {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
-
-    .panel {
-      background-color: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 0.75rem;
-      padding: 1.25rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .panel-title {
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: var(--text);
-    }
-
-    .controls-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
-      align-items: center;
-    }
-
-    .control-item {
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-    }
-
-    .control-label {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    select, input[type="text"], input[type="number"] {
-      background-color: var(--card-inner);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 0.5rem;
-      padding: 0.5rem 0.75rem;
-      font-size: 0.9rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    select:focus, input:focus {
-      border-color: var(--primary);
-    }
-
-    .checkboxes-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.25rem;
-      padding-top: 0.5rem;
-      border-top: 1px solid var(--border);
-    }
-
-    .custom-check {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      cursor: pointer;
-      font-size: 0.875rem;
-      color: var(--text);
-      user-select: none;
-    }
-
-    .custom-check input {
-      accent-color: var(--primary);
-      cursor: pointer;
-    }
-
-    .btn-row {
-      display: flex;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    button {
-      background-color: var(--border);
-      color: var(--text);
-      border: 1px solid transparent;
-      padding: 0.55rem 1.1rem;
-      border-radius: 0.5rem;
-      cursor: pointer;
-      font-size: 0.875rem;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      transition: all 0.2s;
-    }
-
-    button:hover {
-      background-color: #475569;
-    }
-
-    button.primary {
-      background-color: var(--primary);
-      font-weight: 600;
-    }
-
-    button.primary:hover {
-      background-color: var(--primary-hover);
-    }
-
-    .uuid-output-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      max-height: 400px;
-      overflow-y: auto;
-      padding-right: 0.25rem;
-    }
-
-    .uuid-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: var(--card-inner);
-      border: 1px solid var(--border);
-      border-radius: 0.5rem;
-      padding: 0.65rem 0.9rem;
-      gap: 0.75rem;
-    }
-
-    .uuid-text {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 0.95rem;
-      color: #38bdf8;
-      letter-spacing: 0.05em;
-      word-break: break-all;
-    }
-
-    .copy-btn-sm {
-      padding: 0.3rem 0.65rem;
-      font-size: 0.75rem;
-      background-color: var(--border);
-    }
-
-    .copy-btn-sm:hover {
-      background-color: var(--primary);
-    }
-
-    .validator-result {
-      font-size: 0.85rem;
-      padding: 0.6rem 0.85rem;
-      border-radius: 0.5rem;
-      background-color: var(--card-inner);
-      border: 1px solid var(--border);
-      margin-top: 0.5rem;
-      display: none;
-    }
-
-    .validator-result.valid {
-      display: block;
-      border-color: var(--accent);
-      color: #6ee7b7;
-    }
-
-    .validator-result.invalid {
-      display: block;
-      border-color: var(--danger);
-      color: #fca5a5;
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 2rem;
-      background-color: var(--accent);
-      color: #0f172a;
-      padding: 0.6rem 1.2rem;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      font-size: 0.875rem;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: all 0.25s ease;
-      pointer-events: none;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  
-:root{--tb-acc:#d8a25e}
-header.tb{display:flex;align-items:center;gap:14px;max-width:860px;margin:0 auto;padding:20px 20px 6px}
-header.tb .back{font:600 11px/1 ui-monospace,'Cascadia Mono','SF Mono',Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut,#8f949b);border:1px solid var(--border,#282c32);padding:9px 12px;border-radius:8px;white-space:nowrap}
-header.tb .back:hover{color:var(--text,#ecebe6);border-color:#8f949b}
-header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 ui-monospace,'Cascadia Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#d8a25e}
-header.tb h1{font:400 21px/1.25 Georgia,'Iowan Old Style',serif;margin:4px 0 3px;color:var(--text,#ecebe6)}
-header.tb .desc,header.tb .howto,header.tb .priv{margin:0;font-size:12.5px;color:var(--text-muted,#8f949b)}
-header.tb .howto{margin-top:4px}header.tb .howto b{color:#ecebe6;font-weight:600}
-header.tb .priv{margin-top:4px;font-size:11px;opacity:.75}
-header.tb .tag{font:600 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--mut,#8f949b);text-decoration:none}
-@media(max-width:640px){header.tb{padding:14px 14px 4px}}
-</style>
-</head>
-<body>
-  <div class="container">
-    <header>
-      <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
-<div class="mid"><div class="cat">MISC</div><h1>UUID Generator</h1><p class="desc">Ten random v4 UUIDs at a time, built from crypto.getRandomValues — same v4 format Python's uuid4().hex produces.</p><p class="howto"><b>How to use.</b> Click Generate for a new batch, Copy to take the current batch.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></div>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UUID v4 Generator · Toolbench</title>
+<style>
+:root{--bg:#0e0f11;--panel:#15171a;--panel2:#1b1e22;--line:#282c32;--ink:#ecebe6;--mut:#8f949b;
+--acc:#6fb3d2;--mono:ui-monospace,'Cascadia Mono','JetBrains Mono','SF Mono',Consolas,monospace;
+--sans:ui-sans-serif,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+--serif:Georgia,'Iowan Old Style','Times New Roman',serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 var(--sans)}
+a{color:inherit}header.tb{display:flex;align-items:center;gap:16px;max-width:780px;margin:0 auto;padding:22px 20px 14px}
+header.tb .back{font:600 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut);border:1px solid var(--line);padding:9px 12px;border-radius:8px;white-space:nowrap;transition:color .15s,border-color .15s}
+header.tb .back:hover{color:var(--ink);border-color:var(--mut)}
+header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+header.tb h1{font:400 21px/1.25 var(--serif);margin:4px 0 3px}
+header.tb .desc{margin:0;font-size:12.5px;color:var(--mut)}
+header.tb .tag{font:600 10px/1 var(--mono);letter-spacing:.14em;color:var(--mut);text-decoration:none}
+main{max-width:780px;margin:0 auto;padding:6px 20px 56px}
+section.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.fld{display:flex;flex-direction:column;gap:5px;min-width:0}.fld.grow{flex:1 1 220px}
+label{font:600 10.5px/1.2 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--mut)}
+input,select,textarea{background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:9px 11px;font:13px/1.4 var(--mono);width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 18%,transparent)}
+textarea{min-height:130px;resize:vertical}
+button{background:var(--acc);color:#101214;font:700 11.5px/1 var(--sans);letter-spacing:.07em;text-transform:uppercase;padding:11px 15px;border-radius:8px;border:0;cursor:pointer;transition:filter .15s}
+button:hover{filter:brightness(1.12)}button.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line)}
+#out{white-space:pre-wrap;word-break:break-word;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;font:13px/1.65 var(--mono);min-height:52px;margin-top:14px}
+#out:empty::before{content:'—';color:var(--mut)}
+.hint{font-size:12px;color:var(--mut);margin:0 0 12px}
+.hint b{color:var(--ink);font-weight:600}
+.priv{font-size:11px;color:var(--mut);opacity:.8;margin:14px 0 0}
+@media (max-width:640px){header.tb{padding:16px 14px 10px}main{padding:4px 14px 40px}.row{flex-direction:column}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style></head><body>
+<header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
+<div class="mid"><div class="cat">Developer</div><h1>UUID v4 Generator</h1><p class="desc">Batch-random UUIDs (crypto-backed) with a re-roll seed — same count/seed, same list.</p></div>
 <a class="tag" href="../index.html">TOOLBENCH</a></header>
-
-
-    </header>
-
-    <div class="panel">
-      <div class="panel-title">Generator Options</div>
-      <div class="controls-grid">
-        <div class="control-item">
-          <label class="control-label" for="count-select">Quantity</label>
-          <select id="count-select">
-            <option value="1">1 UUID</option>
-            <option value="5" selected>5 UUIDs</option>
-            <option value="10">10 UUIDs</option>
-            <option value="25">25 UUIDs</option>
-            <option value="50">50 UUIDs</option>
-          </select>
-        </div>
-        <div class="control-item">
-          <label class="control-label" for="case-select">Letter Case</label>
-          <select id="case-select">
-            <option value="lower" selected>lowercase</option>
-            <option value="upper">UPPERCASE</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="checkboxes-row">
-        <label class="custom-check">
-          <input type="checkbox" id="opt-hyphens" checked>
-          <span>Hyphens (-)</span>
-        </label>
-        <label class="custom-check">
-          <input type="checkbox" id="opt-braces">
-          <span>Enclosing Braces ({...})</span>
-        </label>
-        <label class="custom-check">
-          <input type="checkbox" id="opt-quotes">
-          <span>Quotes ("...")</span>
-        </label>
-      </div>
-
-      <div class="btn-row">
-        <button class="primary" id="btn-generate">Generate UUIDs</button>
-        <button id="btn-copy-all">Copy All</button>
-        <button id="btn-clear">Clear List</button>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span class="panel-title">Generated Results</span>
-        <span id="result-count" style="font-size: 0.8rem; color: var(--text-muted);">5 items</span>
-      </div>
-      <div class="uuid-output-list" id="uuid-list"></div>
-    </div>
-
-    <div class="panel">
-      <span class="panel-title">UUID Validator</span>
-      <p style="font-size: 0.85rem; color: var(--text-muted);">Paste any UUID string to test RFC 4122 compliance, version, and variant.</p>
-      <input type="text" id="validate-input" placeholder="e.g. 123e4567-e89b-12d3-a456-426614174000">
-      <div id="validator-result" class="validator-result"></div>
-    </div>
-  </div>
-
-  <div class="toast" id="toast">Copied to clipboard!</div>
-
-  <script>
-    const countSelect = document.getElementById('count-select');
-    const caseSelect = document.getElementById('case-select');
-    const optHyphens = document.getElementById('opt-hyphens');
-    const optBraces = document.getElementById('opt-braces');
-    const optQuotes = document.getElementById('opt-quotes');
-    const uuidList = document.getElementById('uuid-list');
-    const resultCount = document.getElementById('result-count');
-    const validateInput = document.getElementById('validate-input');
-    const validatorResult = document.getElementById('validator-result');
-    const toast = document.getElementById('toast');
-
-    let currentUuids = [];
-
-    function showToast(msg) {
-      toast.textContent = msg;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2000);
-    }
-
-    function createV4UUID() {
-      if (typeof crypto.randomUUID === 'function') {
-        return crypto.randomUUID();
-      }
-      const bytes = new Uint8Array(16);
-      crypto.getRandomValues(bytes);
-      bytes[6] = (bytes[6] & 0x0f) | 0x40; // Version 4
-      bytes[8] = (bytes[8] & 0x3f) | 0x80; // Variant 10xx
-      const hex = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
-      return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
-    }
-
-    function formatUuid(raw) {
-      let u = raw;
-      if (!optHyphens.checked) {
-        u = u.replace(/-/g, '');
-      }
-      if (caseSelect.value === 'upper') {
-        u = u.toUpperCase();
-      } else {
-        u = u.toLowerCase();
-      }
-      if (optBraces.checked) {
-        u = `{${u}}`;
-      }
-      if (optQuotes.checked) {
-        u = `"${u}"`;
-      }
-      return u;
-    }
-
-    function generate() {
-      const count = parseInt(countSelect.value, 10) || 1;
-      currentUuids = [];
-      for (let i = 0; i < count; i++) {
-        currentUuids.push(formatUuid(createV4UUID()));
-      }
-      renderList();
-    }
-
-    function renderList() {
-      resultCount.textContent = `${currentUuids.length} item${currentUuids.length === 1 ? '' : 's'}`;
-      if (currentUuids.length === 0) {
-        uuidList.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 1rem;">No UUIDs generated yet.</div>';
-        return;
-      }
-      uuidList.innerHTML = currentUuids.map((uuid, idx) => `
-        <div class="uuid-item">
-          <span class="uuid-text">${uuid}</span>
-          <button class="copy-btn-sm" onclick="copySingle(${idx})">Copy</button>
-        </div>
-      `).join('');
-    }
-
-    async function copySingle(idx) {
-      const u = currentUuids[idx];
-      if (!u) return;
-      try {
-        await navigator.clipboard.writeText(u);
-        showToast('Copied UUID!');
-      } catch (e) {
-        showToast('Copy failed');
-      }
-    }
-
-    document.getElementById('btn-copy-all').addEventListener('click', async () => {
-      if (currentUuids.length === 0) return;
-      try {
-        await navigator.clipboard.writeText(currentUuids.join('\n'));
-        showToast(`Copied ${currentUuids.length} UUIDs!`);
-      } catch (e) {
-        showToast('Copy failed');
-      }
-    });
-
-    document.getElementById('btn-clear').addEventListener('click', () => {
-      currentUuids = [];
-      renderList();
-    });
-
-    document.getElementById('btn-generate').addEventListener('click', generate);
-
-    [caseSelect, optHyphens, optBraces, optQuotes].forEach(el => {
-      el.addEventListener('change', generate);
-    });
-
-    // Validator logic
-    validateInput.addEventListener('input', () => {
-      const val = validateInput.value.trim().replace(/^[{"]|["}]$/g, '');
-      if (!val) {
-        validatorResult.className = 'validator-result';
-        validatorResult.textContent = '';
-        return;
-      }
-
-      // Check standard format 8-4-4-4-12
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-([1-8])[0-9a-f]{3}-([89ab][0-9a-f]{3})-[0-9a-f]{12}$/i;
-      const nilRegex = /^00000000-0000-0000-0000-000000000000$/;
-
-      if (nilRegex.test(val)) {
-        validatorResult.className = 'validator-result valid';
-        validatorResult.textContent = '✓ Valid Nil UUID (all zeros)';
-        return;
-      }
-
-      const match = val.match(uuidRegex);
-      if (match) {
-        const version = match[1];
-        validatorResult.className = 'validator-result valid';
-        validatorResult.textContent = `✓ Valid RFC 4122 UUID — Version ${version} (Variant 1)`;
-      } else {
-        // Test 32 hex chars without hyphens
-        if (/^[0-9a-f]{32}$/i.test(val)) {
-          validatorResult.className = 'validator-result valid';
-          validatorResult.textContent = '✓ Valid 32-character hexadecimal UUID (compact format without hyphens)';
-        } else {
-          validatorResult.className = 'validator-result invalid';
-          validatorResult.textContent = '✗ Invalid UUID format. Expected 8-4-4-4-12 hexadecimal structure.';
-        }
-      }
-    });
-
-    generate();
-  </script>
-</body>
-</html>
+<main><section class="card"><div class="row"><div class="fld grow"><label for="count">Count</label><input id="count" type="text" value="10" min="1" max="100"></div><div class="fld grow"><label for="seed">Seed (blank = random each edit)</label><input id="seed" type="text" ></div></div><div class="row"><button data-act="reroll">Reroll</button><button data-act="copy">Copy</button></div><div id="out"></div></section><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></main>
 <script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const V=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};
+const OUT=h=>{const o=document.getElementById('out');if(o)o.innerHTML=h;};
+const fmt=(n,d=6)=>{if(n===null||n===undefined||!isFinite(n))return '\u2014';return (+n).toLocaleString('en-US',{maximumFractionDigits:d});};
+const wire=ids=>(Array.isArray(ids)?ids:[ids]).forEach(i=>{const e=document.getElementById(i);if(e)e.addEventListener('input',()=>window.run&&window.run());});
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+const act=(b.dataset.act||'').toLowerCase();
+if(act==='copy'){if(navigator.clipboard&&navigator.clipboard.writeText){const t=document.getElementById('out').innerText;navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent='Copied ✓';setTimeout(()=>b.textContent=o,900)})}return}
+if(window.run)run();});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!(e.target.closest&&e.target.closest('input,textarea,select'))){location.href='../index.html';}});
+function mul(x){return function(){x|=0;x=x+0x6D2B79F5|0;let t=Math.imul(x^x>>>15,1|x);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function v4(rnd){const h=Array.from({length:32},()=>Math.floor(rnd()*16));h[12]='4';h[16]='89ab'[Math.floor(rnd()*4)];
+const s=h.join('');return s.slice(0,8)+'-'+s.slice(8,12)+'-'+s.slice(12,16)+'-'+s.slice(16,20)+'-'+s.slice(20)}
+function run(){const n=Math.min(100,Math.max(1,parseInt(V('count'))||10));const sd=V('seed');
+const rnd=sd?mul([...sd].reduce((a,c)=>Math.imul(a^c.charCodeAt(0),16777619)>>>0,2166136261)):Math.random;
+OUT([...Array(n)].map(()=>v4(rnd)).join('\n'))}
+run();wire(['count','seed']);
 </script>
+</body></html>

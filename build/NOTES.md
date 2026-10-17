@@ -1,0 +1,69 @@
+# Toolbench build scripts — how the pages are MADE, not hand-placed.
+
+Run order (repo root):
+  python3 build/gen_v3.py                 # rebuild docs/ (destructive; --check = temp dir)
+  python3 build/smoke.py                  # functional smoke, ALL pages (DOM stub)
+  bash serve.sh                           # LAN host :8090 → http://192.168.31.242:8090
+
+## current pipeline (v3)
+- `gen_v3.py` — THE build. Reads `build/_all.txt` (the roster of shipped
+  filenames; equals the deployed set exactly, checked). Each name resolves to
+  ONE source (SPEC_SINGLETONS/PORTED_LOSERS map + default rule): a ported
+  page copied VERBATIM from `build/orig/tools/` (the git-tracked snapshot of
+  the shipped set) or a spec tool rendered through the ONE shell (`shell.py`).
+  Then the landing + manifest.json regenerate from the same set, then the
+  written tree is VERIFIED (file == link == manifest; dead handlers;
+  unwrapped/unbalanced script blocks).
+- `smoke.py` — functional harness: extracts every page's inline JS, runs it
+  under a DOM stub (Node v26 helper), prints PASS or the throw. Never trust a
+  build without `python3 build/smoke.py` PASS on docs/tools.
+- `shell.py` / `gen_helpers.py` / `desc_map.py` — the shared shell template,
+  its helpers, and the id → (cat,title,desc,howto) copy source (in use).
+
+## the twin rule (what "simple like a six-sided die" means here)
+- one tool, one job. Two pages doing the same job under different names =
+  one is cut (SPEC_SINGLETONS cuts the weaker; the 2026-10-17 rebuild cut the
+  grep/regex-tester pair to ONE — ported "Line Finder (grep)" kept).
+- multi-mode pages that are HONESTLY one job (monte-carlo's four games, the
+  countdown timer's start/pause/reset, the 4x4 puzzle grid) stay as they are;
+  `audit()` PRINTS every >5-control page as LOOK flags — they are reviewed by
+  hand, never mutilated by a blind counter (the counter overcounted 7 pages
+  last time by counting <button literals inside JS strings).
+
+## the twin war, settled (2026-10-17 — the rebuild that cut 50 → ~45 pages)
+- v2's "collision" dedup was a SILENT SHIP-BOTH bug (id-collision skipped the
+  spec copy only when the ported file's NAME matched; it shipped both twins
+  whenever the names differed — and even shipped the same spec under TWO
+  module copies when names collided otherwise). Verified by reading the whole
+  snapshot: cross-module dupes case-converter/line-tools/lorem/palindrome/
+  text-reverser/unicode-inspector/jwt-decoder/cron-explainer + the -/_
+  filename twins (text-diff + text-diff-viewer, markdown-preview +
+  markdown-previewer, query-lab + query-builder, cron-explainer +
+  cron-scheduler/cron-next-runs, url-codec + url-codec2, both uuid/slug/
+  regex-tester pairs, both stopwatches, both pomodoros, habit/water trackers…).
+- gen_tools.py (v2 pipeline) still exists ONLY as reference: its source dir
+  `~/.hermes/cache/scratch/htmltools` was PRUNED (scratch prunes in 24h —
+  THAT is why the shipped set now lives in git-tracked `build/orig/tools/`).
+- v2 smoke ran from a PRUNED scratch dir and printed 100/100 PASS: true then,
+  false now — never trust an old smoke banner; always re-run on what is built.
+- README's "≤3 controls, 100/100" claim was false-positive machinery (the
+  whole-page regex counted <button literals inside JS; real >5 count = 39
+  pages). KEPT HONESTLY: todo_checklist (7 checks = its job), dice/wheel/
+  todo localStorage trackers (that IS the game/tool; the "no state survives"
+  line was aspirational).
+
+## privacy posture (CIA-audited on the rebuilt tree, 2026-10-17)
+- ZERO external network refs (grep-proven): no external src/href, no
+  fetch/XHR/Worker/EventSource/WebSocket/sendBeacon/dynamic-import anywhere.
+  The only "fetch(/XMLHttpRequest" strings on Earth in this repo are inside
+  the OUTPUT of cURL→fetch (the text it writes) and its landing blurb.
+- ONE eval-class surface BY DESIGN: `js-runner` (JS Scratch Runner) executes
+  pasted JS via `new Function` — its whole feature is a scratch runner, not
+  an accident. It is labelled in landing + page header.
+
+## evidence bar (what "verified" meant on 2026-10-17, so you can re-check)
+- before rebuild: deployed docs/tools == _all.txt == landing links exactly
+  (comm diff empty); live Pages 200 == HEAD bytes for index + sampled pages.
+- after rebuild: gen_v3 static layer (count, links==files==manifest, dead
+  ids, wrapper/braces) + `python3 build/smoke.py` on the WRITTEN tree (all
+  pages execute; prints PASS count or throws) + landing spot checks.

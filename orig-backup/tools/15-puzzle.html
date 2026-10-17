@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>15-Puzzle</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --accent: #10b981;
+      --tile-bg: #2d3748;
+      --tile-hover: #3b475a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .stats-bar {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      font-size: 0.95rem;
+      font-variant-numeric: tabular-nums;
+      padding: 0 0.5rem;
+    }
+
+    .board-container {
+      position: relative;
+      width: 320px;
+      height: 320px;
+      background-color: #0b1120;
+      border: 2px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 8px;
+    }
+
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      gap: 8px;
+      width: 100%;
+      height: 100%;
+    }
+
+    .tile {
+      background-color: var(--tile-bg);
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+      transition: transform 0.1s ease, background-color 0.2s ease;
+      border: 1px solid #4a5568;
+    }
+
+    .tile:hover {
+      background-color: var(--tile-hover);
+      border-color: var(--primary);
+    }
+
+    .tile.correct {
+      border-color: rgba(16, 185, 129, 0.4);
+      background-color: #1e3a45;
+    }
+
+    .tile.empty {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      cursor: default;
+    }
+
+    .win-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(15, 23, 42, 0.92);
+      border-radius: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      text-align: center;
+      padding: 1rem;
+      display: none;
+    }
+
+    .win-overlay.show {
+      display: flex;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.75rem;
+      width: 100%;
+      justify-content: center;
+    }
+
+    button.btn {
+      padding: 0.65rem 1.5rem;
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background-color: #2563eb;
+    }
+
+    .btn-secondary {
+      background-color: #0b1120;
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background-color: #1e293b;
+    }
+
+    .hint-keys {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+  
+:root{--tb-acc:#d8a25e}
+header.tb{display:flex;align-items:center;gap:14px;max-width:860px;margin:0 auto;padding:20px 20px 6px}
+header.tb .back{font:600 11px/1 ui-monospace,'Cascadia Mono','SF Mono',Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--mut,#8f949b);border:1px solid var(--border,#282c32);padding:9px 12px;border-radius:8px;white-space:nowrap}
+header.tb .back:hover{color:var(--text,#ecebe6);border-color:#8f949b}
+header.tb .mid{flex:1;min-width:0}header.tb .cat{font:600 10px/1 ui-monospace,'Cascadia Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#d8a25e}
+header.tb h1{font:400 21px/1.25 Georgia,'Iowan Old Style',serif;margin:4px 0 3px;color:var(--text,#ecebe6)}
+header.tb .desc,header.tb .howto,header.tb .priv{margin:0;font-size:12.5px;color:var(--text-muted,#8f949b)}
+header.tb .howto{margin-top:4px}header.tb .howto b{color:#ecebe6;font-weight:600}
+header.tb .priv{margin-top:4px;font-size:11px;opacity:.75}
+header.tb .tag{font:600 10px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--mut,#8f949b);text-decoration:none}
+@media(max-width:640px){header.tb{padding:14px 14px 4px}}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
+<div class="mid"><div class="cat">GAMES & PLAY</div><h1>15 Puzzle</h1><p class="desc">Slide the numbered tiles back into order on a 4×4 grid.</p><p class="howto"><b>How to use.</b> Click a tile next to the gap to slide it; R resets, U undoes. Timer and move counter track your run.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></div>
+<a class="tag" href="../index.html">TOOLBENCH</a></header>
+
+<p>Slide numbered tiles into numerical order on a 4x4 grid to solve the classic puzzle.</p>
+    </header>
+
+    <div class="card">
+      <div class="stats-bar">
+        <span>Moves: <strong id="movesText" style="color:var(--text);">0</strong></span>
+        <span>Time: <strong id="timerText" style="color:var(--primary);">00:00</strong></span>
+      </div>
+
+      <div class="board-container">
+        <div class="board-grid" id="boardGrid"></div>
+        <div class="win-overlay" id="winOverlay">
+          <div style="font-size: 2.5rem;">🏆</div>
+          <div style="font-size: 1.4rem; font-weight: 700; color: var(--accent);">Puzzle Solved!</div>
+          <p style="font-size: 0.9rem; color: var(--text-muted);" id="winDetails">You solved it in 0 moves!</p>
+          <button class="btn btn-primary" onclick="initGame()">Play Again</button>
+        </div>
+      </div>
+
+      <div class="hint-keys">
+        Click tiles or use Arrow Keys (↑ ↓ ← →) to slide
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="initGame()">Shuffle</button>
+        <button class="btn btn-secondary" onclick="resetToSolved()">Solve Preview</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const boardGrid = document.getElementById('boardGrid');
+    const movesText = document.getElementById('movesText');
+    const timerText = document.getElementById('timerText');
+    const winOverlay = document.getElementById('winOverlay');
+    const winDetails = document.getElementById('winDetails');
+
+    // 4x4 board represented as flat array of size 16. 0 is empty tile.
+    let board = [];
+    let moves = 0;
+    let secondsElapsed = 0;
+    let timerInterval = null;
+    let isGameActive = false;
+
+    function formatTime(s) {
+      const m = Math.floor(s / 60);
+      const sec = s % 60;
+      return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+    }
+
+    function startTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      secondsElapsed = 0;
+      timerText.textContent = "00:00";
+      timerInterval = setInterval(() => {
+        secondsElapsed++;
+        timerText.textContent = formatTime(secondsElapsed);
+      }, 1000);
+    }
+
+    function initGame() {
+      winOverlay.classList.remove('show');
+      board = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0];
+      moves = 0;
+      movesText.textContent = '0';
+
+      // Perform 250 random valid moves from solved position to guarantee solvability!
+      let emptyPos = 15;
+      let lastMove = -1;
+
+      for (let i = 0; i < 250; i++) {
+        const neighbors = getValidNeighbors(emptyPos).filter(pos => pos !== lastMove);
+        const chosen = neighbors[Math.floor(Math.random() * neighbors.length)];
+        // Swap emptyPos with chosen
+        board[emptyPos] = board[chosen];
+        board[chosen] = 0;
+        lastMove = emptyPos;
+        emptyPos = chosen;
+      }
+
+      isGameActive = true;
+      startTimer();
+      renderBoard();
+    }
+
+    function getValidNeighbors(idx) {
+      const row = Math.floor(idx / 4);
+      const col = idx % 4;
+      const neighbors = [];
+
+      if (row > 0) neighbors.push(idx - 4); // Up
+      if (row < 3) neighbors.push(idx + 4); // Down
+      if (col > 0) neighbors.push(idx - 1); // Left
+      if (col < 3) neighbors.push(idx + 1); // Right
+
+      return neighbors;
+    }
+
+    function renderBoard() {
+      boardGrid.innerHTML = '';
+      board.forEach((val, idx) => {
+        const tile = document.createElement('div');
+        if (val === 0) {
+          tile.className = 'tile empty';
+        } else {
+          const isCorrect = val === (idx + 1);
+          tile.className = 'tile' + (isCorrect ? ' correct' : '');
+          tile.textContent = val;
+          tile.onclick = () => handleTileClick(idx);
+        }
+        boardGrid.appendChild(tile);
+      });
+    }
+
+    function handleTileClick(idx) {
+      if (!isGameActive) return;
+
+      const emptyPos = board.indexOf(0);
+      const neighbors = getValidNeighbors(emptyPos);
+
+      if (neighbors.includes(idx)) {
+        // Swap
+        board[emptyPos] = board[idx];
+        board[idx] = 0;
+        moves++;
+        movesText.textContent = moves;
+        renderBoard();
+        checkWin();
+      }
+    }
+
+    function checkWin() {
+      for (let i = 0; i < 15; i++) {
+        if (board[i] !== i + 1) return;
+      }
+      if (board[15] !== 0) return;
+
+      // Won!
+      isGameActive = false;
+      clearInterval(timerInterval);
+      winDetails.textContent = `Completed in ${moves} moves and ${formatTime(secondsElapsed)}!`;
+      winOverlay.classList.add('show');
+    }
+
+    function resetToSolved() {
+      clearInterval(timerInterval);
+      isGameActive = false;
+      board = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0];
+      moves = 0;
+      movesText.textContent = '0';
+      timerText.textContent = '00:00';
+      winOverlay.classList.remove('show');
+      renderBoard();
+    }
+
+    // Keyboard support
+    window.addEventListener('keydown', (e) => {
+      if (!isGameActive) return;
+      const emptyPos = board.indexOf(0);
+      const row = Math.floor(emptyPos / 4);
+      const col = emptyPos % 4;
+      let target = -1;
+
+      // Key pushes tile into blank slot:
+      if (e.key === 'ArrowUp' && row < 3) {
+        target = emptyPos + 4; // Tile below moves UP
+      } else if (e.key === 'ArrowDown' && row > 0) {
+        target = emptyPos - 4; // Tile above moves DOWN
+      } else if (e.key === 'ArrowLeft' && col < 3) {
+        target = emptyPos + 1; // Tile on right moves LEFT
+      } else if (e.key === 'ArrowRight' && col > 0) {
+        target = emptyPos - 1; // Tile on left moves RIGHT
+      }
+
+      if (target !== -1) {
+        e.preventDefault();
+        handleTileClick(target);
+      }
+    });
+
+    initGame();
+  </script>
+</body>
+</html>
+<script>
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!(e.target.closest&&e.target.closest('input,textarea,select'))){location.href='../index.html';}});
+</script>
