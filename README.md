@@ -46,10 +46,10 @@ STALE evidence, not current proof. Re-run, never re-claim.
 |---|---|---|
 | Games & Play | 11 | 15 Puzzle, Maze Maker (DFS), KenKen, Blackjack (S17), Wordle Helper, Simon Says, Minesweeper, Coin-Flip/Dice-roller stats, Number Guess, Random Picker Wheel |
 | Math & Finance | 3 | Expression Solver, Monte-Carlo Odds Simulator, Compound Interest |
-| Text | 12 | Text Diff (LCS + side-by-side), Regex Replace, Line Tools, Case Converter, Unicode Inspector, ASCII Banner, Typo Scanner |
+| Text | 12 | Text Diff (LCS + side-by-side), Regex Replace, Line Tools, Case Converter, Unicode Inspector (text-reverser/lorem/madlibs pairs resolved — see build/NOTES.md), ASCII Banner, Typo Checker |
 | Encoding & Hashing | 18 | Base64, Hex⇄Text, Binary⇄Text, ROT13+Caesar, Vigenère, CRC32/FNV-1a, SHA-256 (WebCrypto), Entropy Scanner, URL codecs |
 | Color | 4 | Gradient Lab, Box-Shadow Lab, Contrast Checker (WCAG), Hex/HSL/RGB converter |
-| Time & Productivity | 6 | Stopwatch + laps, Typing Speed, Reaction Time, Emoji Picker, Countdown, Timezone Compare, Flashcards, Habit Tracker |
+| Time & Productivity | 6 | Countdown, Emoji Picker, Flashcards, Password Generator, Reaction Tester, Typing Speed |
 | Developer | 19 | JSON Formatter/Validator, JSON→TS/CSV, JWT Decoder, YAML→JSON, cURL→fetch, Regex Tester, JS Scratch Runner, HTML Preview/Minifier, Cron Explainer/Next Runs, Query Lab/Builder, Slug/UUID |
 | Misc | 1 | (heuristic groupings — see build/NOTES.md) |
 

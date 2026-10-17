@@ -85,3 +85,6 @@ Run order (repo root):
 - after rebuild: gen_v3 static layer (count, links==files==manifest, dead
   ids, wrapper/braces) + `python3 build/smoke.py` on the WRITTEN tree (all
   pages execute; prints PASS count or throws) + landing spot checks.
+- `~/data/sword_forge_stage2/` = stage-2 source chunks (42 files; wstg_10 JWT p1 is TRUNCATED).
+- Recon CLIs (httpx/naabu/nuclei/subfinder/naabu) = ABSENT on this desktop (checked 2026-10-17 `which -a`). pip `httpx` in PATH = python-pip package (name-squat) ≠ project httpx.
+- Laptop agent (192.168.31.119) = FULL Hermes, A2A 9900 LIVE ('unauthorized' probe = reached; browser toolsets = its Chrome, currently down). Its Chrome attach via desktop `browser.cdp_url` was DEAD too (9222 silent) — so Oct16 recon ran engine-by-curl only.
