@@ -46,6 +46,15 @@ Run order (repo root):
   THAT is why the shipped set now lives in git-tracked `build/orig/tools/`).
 - v2 smoke ran from a PRUNED scratch dir and printed 100/100 PASS: true then,
   false now — never trust an old smoke banner; always re-run on what is built.
+  Today's re-verification (Oct17, full sweep): docs/tools re-diffed against
+  `build/orig/tools/` — 71 of 74 byte-identical copies; only 3 rewritten (the
+  PAIR_CUTS winners). Landing = 74 hrefs, 0 non-200 through BOTH Pages and the
+  LAN host (fresh server re-pin; `ss`/`curl` verified).
+- `docs/tools/` = the DEPLOYED tree, NOT a source of truth. `build/_all.txt` =
+  the deployed-FILE inventory (100 names), not a 100-TOOL roster: names can be
+  aliases of one job (`todo_checklist_with_localstorage`, `random_picker_wheel`
+  = dead-handler + niche → removed with their pairs) or typo'd (`bmi-calcuator`
+  family) — so "count == 100" is never itself the proof of correctness.
 - B-pass audit (2026-10-17, on the rebuilt 76-page tree): 0 external network
   refs (the only `fetch(`/`XMLHttpRequest` strings = OUTPUT text inside
   cURL→fetch); the one eval surface (`js-runner`'s `new Function`) is BY
