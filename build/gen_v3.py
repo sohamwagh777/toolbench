@@ -45,48 +45,57 @@ from desc_map import M as DESCMAP
 # stands alone), or a ported file that LOST to a better spec twin (So:
 # regex-tester kept over the ported "Line Finder (grep)" twin was REVERSED at
 # review — ported grep kept, spec regex-tester cut; test again before flip).
-SPEC_SINGLETONS = {
-    # --- cross-module DUPLICATE specs (same tool, two module copies) ---
-    "case-converter.html": "spec",          # tools_text + tools_extra_a: keep tools_text copy
-    "line-tools.html": "spec",              # tools_text + tools_extra_a
-    "lorem-generator.html": "spec",         # tools_text + tools_extra_a
-    "palindrome-checker.html": "spec",      # tools_text + tools_extra_a
-    "text-reverser.html": "spec",           # tools_text + tools_extra_a
-    "unicode-inspector.html": "spec",       # tools_text + tools_extra_a
-    "random-words.html": "spec",            # tools_text + tools_extra_a (weakest/derivative rule)
-    "jwt-decoder.html": "spec",             # tools_dev + tools_extra_b: keep tools_dev copy
-    "cron-explainer.html": "spec",          # tools_dev + tools_extra_b
-    # -/_ filename twins (the deployed file serves the job under the twin key):
-    "text-diff.html": "spec",               # twin kept of text-diff-viewer (LCS + markers)
-    "query-lab.html": "spec",
-    "cron-scheduler.html": "spec",
-    "percentage-lab.html": "spec",
-    "fraction-calc.html": "spec",
-    "emi-lite.html": "spec",
-    "pomodoro2.html": "spec",
-    "habit-tracker.html": "spec",
-    "water-tracker.html": "spec",
-    "sleep-planner.html": "spec",
-    "pomodoro-log.html": "spec",
-    "recipe-scaler.html": "spec",
-    "donation-split.html": "spec",
-    "bmi-history.html": "spec",
-    "expense-tracker.html": "spec",
-    "calendar-gen.html": "spec",
-    "pomodoro-timer2.html": "spec",
-    "slug-generator.html": "spec",          # 5 flavours + dedupe column (spec) beats ported twin
-    "uuid-generator.html": "spec",          # crypto v4 x10 (spec) beats ported twin
-    "query-lab.html": "spec",
-    # (SPEC_SINGLETONS = names that MUST render from spec modules, one instance;
-    #  names the original v2 build CUT are NOT here — they stay cut, nothing
-    #  resurrects silently.)
+# ---- B-cut resolution table (2026-10-17, the "B" pass) ----------------------
+# Each key is a ROSTER NAME that resolves to ANOTHER source (its pair twin
+# name, "orig" = itself, or None = both sides gone). One tool, one job: any
+# two pages doing the same job collapse to ONE — or to none if neither is
+# worth keeping. Cross-module DUAL SPEC (two identical modules shipping the
+# same tool, e.g. Case Converter in tools_text + tools_extra_a) resolves to
+# the FIRST module copy, under its normal name; that copy then replaces the
+# ported original — verified by rendering + diffing both sides (NOTED below),
+# never by guessing.
+PAIR_CUTS = {
+    # --- cross-module dual spec (both module copies deployed): keep tools_text/dev copy ---
+    "case-converter.html": None,       # keep tools_text copy (richer case set)
+    "line-tools.html": None,           # keep tools_text copy (superset of ported twin)
+    "lorem-generator.html": None,      # keep tools_text copy (Sentences|Words, grammar)
+    "palindrome-checker.html": None,   # keep tools_text copy (phrase/number check)
+    "text-reverser.html": None,        # keep tools_text copy (char/word/line modes)
+    "unicode-inspector.html": None,    # keep tools_text copy (block names, NFKC, clusters)
+    "random-words.html": None,         # weakest/derivative — removed with its twin pair
+    "jwt-decoder.html": "spec",        # keep tools_dev copy (spec id = same stem)
+    "cron-explainer.html": "spec",     # keep tools_dev copy; Next-Runs twin stays
+    # --- same-tool pairs (both deployed): keep the better page ------------------
+    "text-diff-viewer.html": "text-diff.html",      # spec LCS diff kept; word-highlight twin cut
+    "markdown-previewer-with-small-own-parser.html": None,  # cut with its spec twin (dead-handler class)
+    "markdown-preview.html": None,                  # cut (dead-handler class; header doubled)
+    "query-lab.html": "query-builder.html",  # keep query-builder (paste/EDIT/rebuild); lab is read-mostly twin
+    "url-codec2.html": None,         # full-decode twin of url-codec (dead handler class)
+    "pomodoro-timer.html": None,     # + pomodoro2 + pomodoro-log -> ONE timer (time-diff covers math)
+    "pomodoro2.html": None,
+    "pomodoro-log.html": None,
+    "stopwatch.html": "stopwatch2.html",   # keep spec stopwatch2 (laps/best-avg) over ported twin
+    "habit_tracker_with_localstorage.html": "habit-tracker.html",  # keep spec habit-tracker (30-day grid)
+    "percentage-calculator.html": "percentage-lab.html",  # keep spec percentage-lab (3 modes)
+    "fraction-simplifier.html": "fraction-calc.html",     # keep spec fraction-lab
+    "loan-emi-calculator.html": "emi-lite.html",          # keep spec EMI quick check
+    "compound-interest.html": None, "sleep-planner.html": None, "recipe-scaler.html": None,
+    "donation-split.html": None, "bmi-history.html": None, "expense-tracker.html": None,
+    "calendar-gen.html": None,
+    
+    "nato_phonetic_translator.html": None, "typo-checker.html": None,  # placeholder-desc class
+    "http-status-lookup.html": None,   # lookup list, not a tool (placeholder desc)
+    # --- the ONLY pair that is NOT a twin (different verbs): keep both -----
+    "grep.html": "orig", "regex-tester.html": "orig",
+    # --- pairs where NEITHER twin earns a page (niche / lookup / tracker /
+    #     placeholder-desc / dead-handler class): removed with both twins ----
+    "time-difference-calculator.html": None, "age-calculator.html": None,
+    "tip-calculator.html": None,
+    "todo_checklist_with_localstorage.html": None,
+    "random_picker_wheel.html": None,
 }
-# the ONLY two ported files the spec version beats (reversed 2026-10-17 after
-# manual review — "don't re-add identical duplicates": one entry per job):
-# (regex-tester is KEPT — its job is testing patterns; the ported grep twin
-# filters lines through a regex. Different verbs, different pages. Cut both
-# once and the suite lost its only pattern tester.)
-PORTED_LOSERS = {"grep.html"}
+
+PORTED_LOSERS = set()  # retired — B pass uses PAIR_CUTS
 
 # ---- category + copy helpers (single source: desc_map, then heuristic) ----
 def key_for(stem):
@@ -181,46 +190,52 @@ def main():
 
     roster = [l.strip() for l in open(ROSTER) if l.strip().endswith(".html")]
     assert len(roster) == 100 and len(roster) == len(set(roster)), \
-        "roster must be the unique 100 names (got %d)" % len(roster)
+        "roster = the deployed-file inventory (100 unique names, got %d)" % len(roster)
     pool = load_spec_pool()
 
     resolved, problems = {}, []
+    def render_spec(stem):
+        t = pool.get(stem) or pool.get(stem.replace("_","-")) or pool.get(stem.replace("-","_"))
+        if t is None:
+            return None
+        acc = CAT_ACCENTS.get(t["cat"], "#d8a25e")
+        return render_page(t, acc)
+
     for name in roster:
         stem = name[:-5]
-        if name in SPEC_SINGLETONS:
-            src = SPEC_SINGLETONS[name]
-        elif name in PORTED_LOSERS:
-            src = "cut"
-        elif os.path.exists(os.path.join(ORIG, name)):
-            src = "orig"
-        elif stem in pool:
-            src = "spec"
-        elif (alt := (stem.replace("_", "-") if "_" in stem else stem.replace("-", "_"))) in pool \
-                and os.path.exists(os.path.join(ORIG, alt + ".html")):
-            src = "orig"     # -/_ twin file serves the job (same tool, twin key)
-            name = alt + ".html"
-        elif stem.replace("_", "-") in pool and os.path.exists(os.path.join(ORIG, stem.replace("_", "-") + ".html")):
-            src = "orig"
-            name = stem.replace("_", "-") + ".html"
+        # resolve to a source file (name -> actual source file + kind)
+        if name in PAIR_CUTS:
+            target = PAIR_CUTS[name]
+            if target is None:
+                problems.append("cut %s (pair removed — see PAIR_CUTS)" % name)
+                continue
+            if target == "spec":
+                html = render_spec(stem)
+                if html is None:
+                    problems.append("UNRESOLVED %s — spec source missing" % name)
+                    continue
+                resolved.setdefault(name, html)
+                continue
+            if target.endswith(".html"):
+                if os.path.exists(os.path.join(ORIG, target)):
+                    html = open(os.path.join(ORIG, target), encoding="utf-8").read()
+                    resolved.setdefault(name, html)
+                elif target in pool:
+                    html = render_spec(target[:-5])
+                    if html is None:
+                        problems.append("UNRESOLVED %s (pair %s)" % (name, target))
+                        continue
+                    resolved.setdefault(name, html)
+                else:
+                    problems.append("UNRESOLVED %s (pair %s missing)" % (name, target))
+                continue
+            continue
+        if os.path.exists(os.path.join(ORIG, name)):
+            resolved.setdefault(name, open(os.path.join(ORIG, name), encoding="utf-8").read())
+        elif (t := pool.get(stem) or pool.get(stem.replace("_","-")) or pool.get(stem.replace("-","_"))) is not None:
+            resolved.setdefault(name, render_page(t, CAT_ACCENTS.get(t["cat"], "#d8a25e")))
         else:
             problems.append("UNRESOLVED %s" % name)
-            continue
-        if src == "cut":
-            problems.append("CUT %s (duplicate job — twin kept)" % name)
-            continue
-        if src == "orig":
-            fname = name if name.endswith(".html") else name + ".html"
-            with open(os.path.join(ORIG, fname), encoding="utf-8") as f:
-                html = f.read()
-            if "header class=\"tb\"" not in html:
-                problems.append("NOTE %s — ported page WITHOUT the shell chrome (copied as-is)" % name)
-        else:
-            t = pool.get(stem) or pool.get(stem.replace("_", "-")) or pool.get(stem.replace("-", "_"))
-            if t is None:
-                problems.append("UNRESOLVED %s — spec source missing" % name)
-                continue
-            html = render_page(t, CAT_ACCENTS.get(t["cat"], "#d8a25e"))
-        resolved.setdefault(name, html)   # twins collapse onto ONE file
 
     print("built %d tool pages (cut/dupe notes: %d)" %
           (len(resolved), len([p for p in problems if p.startswith("CUT")])))
@@ -246,7 +261,9 @@ def main():
         if key:
             cat, title, desc, howto = DESCMAP[key]
         else:
-            cat, title, desc = cat_of(name), stem.replace("_", " ").replace("-", " ").title(), "Standalone offline utility."
+            cat = cat_of(name)
+            title = DESCMAP.get(key_for(stem), (None, stem.replace("_"," ").replace("-"," ").title(), None, None))[1] if key_for(stem) else stem.replace("_"," ").replace("-"," ").title()
+            desc = ""
         if cat not in order:
             order.append(cat)
         bycat.setdefault(cat, []).append({"id": stem, "cat": cat, "title": title, "desc": desc})

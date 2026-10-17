@@ -34,9 +34,9 @@ button:hover{filter:brightness(1.12)}button.ghost{background:var(--panel2);color
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style></head><body>
 <header class="tb"><a class="back" href="../index.html" title="Back to all tools (Esc)">&#8592; All tools</a>
-<div class="mid"><div class="cat">Developer</div><h1>Query String Lab</h1><p class="desc">Paste a URL or bare query — decode to a table, or rebuild from edits</p></div>
+<div class="mid"><div class="cat">Developer</div><h1>Query String Lab</h1><p class="desc">Paste a URL to list its params and values, or edit params and get a rebuilt URL.</p></div>
 <a class="tag" href="../index.html">TOOLBENCH</a></header>
-<main><div class="fld grow"><label for="ta">URL or query</label><textarea id="ta" ></textarea></div><div class="row"><button data-act="decode">Decode</button><button data-act="encode">Encode</button><button data-act="copy">Copy</button></div><div id="out"></div><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></main>
+<main><section class="card"><div class="fld grow"><label for="url">URL or params (k=v per line)</label><input id="url" type="text" ></div><div class="row" style="margin-top:12px"><div class="row"><button data-act="run">Run</button><button data-act="copy">Copy</button></div></div><div id="out"></div></section><p class="hint"><b>How to use.</b> Edit the top box (or hit Clear) and the rebuilt URL below tracks it live.</p><p class="priv">Private &amp; local: everything stays in this page — no network calls, no tracking, your input never leaves this tab.</p></main>
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const V=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};
@@ -48,14 +48,12 @@ const act=(b.dataset.act||'').toLowerCase();
 if(act==='copy'){if(navigator.clipboard&&navigator.clipboard.writeText){const t=document.getElementById('out').innerText;navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent='Copied ✓';setTimeout(()=>b.textContent=o,900)})}return}
 if(window.run)run();});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!(e.target.closest&&e.target.closest('input,textarea,select'))){location.href='../index.html';}});
-function run(){var t=(V('ta')||'').trim();if(!t){OUT('');return;}
-try{if(/=/ .test('x=x')&&false)throw 0;
-if(t.indexOf('=')>=0){const u=new URL(t, 'http://x');const o=[];
-u.searchParams.forEach((v,k)=>o.push(k+' = '+v));
-o.push('decoded: '+decodeURIComponent(t.split('?')[1]||t));OUT(o.join('\n'));}
-else{const pairs=t.split(/[\n&]/).filter(x=>x).map(x=>{const i=x.indexOf('=');if(i<0){const p=x.split(' ');return encodeURIComponent(p[0])+'='+encodeURIComponent(p.slice(1).join(' '));}
-return encodeURIComponent(x.slice(0,i))+'='+encodeURIComponent(x.slice(i+1));});
-OUT(pairs.join('&')+'\n\n'+'?'+pairs.join('&'));}}catch(e){OUT('ERROR: '+e.message);}}
-wire('ta');
+function run(){let s=(V('url')||'').trim();if(!s)return OUT('');let base='',rest=s;
+if(/^https?:\/\//i.test(s)){const u=new URL(s);base=u.origin+u.pathname;rest=u.search.slice(1)}
+const params=rest.split(/\n|&/).map(x=>x.trim()).filter(Boolean).map(x=>{const i=x.indexOf('=');return i<0?[x,'']:[x.slice(0,i),x.slice(i+1)]});
+const rebuilt=base+(params.length?'?'+params.map(p=>p[0]+'='+p[1]).join('&'):'');
+let U='';try{U='\n\nencoded:\n'+decodeURIComponent(rebuilt)}catch(e){}
+OUT(params.length?('params ('+params.length+'):\n'+params.map(p=>'  '+p[0]+' = '+p[1]).join('\n')+'\n\nrebuilt:\n'+rebuilt):'no params found')}
+if(!V('url')){$('#url').value='https://shop.example/cart?utm_source=nl&coupon=SAVE10'}run();wire('url');
 </script>
 </body></html>

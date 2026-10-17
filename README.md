@@ -1,6 +1,6 @@
 # Toolbench
 
-A self-contained workbench of **99 distinct client-side tools** (one page per job — the twins were cut Oct 2026, see build/NOTES.md) — text & code utilities,
+A self-contained workbench of **74 distinct client-side tools** (one page per job — twins + non-tools removed Oct 2026, see build/NOTES.md) (one page per job — the twins were cut Oct 2026, see build/NOTES.md) — text & code utilities,
 ciphers, converters, calculators, puzzles and games — packaged as plain HTML
 files with a premium landing page. No frameworks, no CDNs, no build step, no
 network calls: open any page and it works offline.
@@ -44,14 +44,14 @@ STALE evidence, not current proof. Re-run, never re-claim.
 
 | Category | Count | Examples |
 |---|---|---|
-| Games & Play | 11 | 15 Puzzle, Maze Maker (DFS), KenKen, Blackjack (S17), Wordle Helper, Simon Says, Minesweeper, Dice Roll Stats, Coin Flip Stats, Number Guess, Random Picker Wheel |
-| Math & Finance | 10 | Expression Solver, Monte-Carlo Odds Simulator, Compound Interest, EMI, Tip, Age, BMI, Percentage, Time-difference |
-| Text | 20 | Text Diff, Regex Replace, Line Tools, Case Converter, Unicode Inspector, Mad-Libs, ASCII Banner, Typo Scanner |
-| Encoding & Hashing | 19 | Base64, Hex⇄Text, Binary⇄Text, ROT13 + Caesar, Vigenère, CRC32/FNV-1a, SHA-256 (WebCrypto), Entropy Scanner, URL codecs |
-| Developer | 23 | JSON Formatter/Validator, JSON→TS, JWT Decoder, YAML→JSON, cURL→fetch, Regex Tester, Hex Dump Viewer, JS Scratch Runner, HTML Preview/Minifier, Cron Explainer/Next Runs, Query Labs, Slug/UUID |
+| Games & Play | 11 | 15 Puzzle, Maze Maker (DFS), KenKen, Blackjack (S17), Wordle Helper, Simon Says, Minesweeper, Coin-Flip/Dice-roller stats, Number Guess, Random Picker Wheel |
+| Math & Finance | 3 | Expression Solver, Monte-Carlo Odds Simulator, Compound Interest |
+| Text | 12 | Text Diff (LCS + side-by-side), Regex Replace, Line Tools, Case Converter, Unicode Inspector, ASCII Banner, Typo Scanner |
+| Encoding & Hashing | 18 | Base64, Hex⇄Text, Binary⇄Text, ROT13+Caesar, Vigenère, CRC32/FNV-1a, SHA-256 (WebCrypto), Entropy Scanner, URL codecs |
 | Color | 4 | Gradient Lab, Box-Shadow Lab, Contrast Checker (WCAG), Hex/HSL/RGB converter |
-| Time & Productivity | 10 | Pomodoro, Stopwatch, Typing Speed, Reaction Time, Emoji Picker, Countdown, Timezone Compare, Flashcards, Todo, Habit Tracker |
-| Misc | 2 | Random Picker Wheel, Time-difference calc (landing groups are heuristic — see NOTES) |
+| Time & Productivity | 6 | Stopwatch + laps, Typing Speed, Reaction Time, Emoji Picker, Countdown, Timezone Compare, Flashcards, Habit Tracker |
+| Developer | 19 | JSON Formatter/Validator, JSON→TS/CSV, JWT Decoder, YAML→JSON, cURL→fetch, Regex Tester, JS Scratch Runner, HTML Preview/Minifier, Cron Explainer/Next Runs, Query Lab/Builder, Slug/UUID |
+| Misc | 1 | (heuristic groupings — see build/NOTES.md) |
 
 ## Quick start
 

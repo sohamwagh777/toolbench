@@ -42,10 +42,19 @@ Run order (repo root):
   cron-scheduler/cron-next-runs, url-codec + url-codec2, both uuid/slug/
   regex-tester pairs, both stopwatches, both pomodoros, habit/water trackers…).
 - gen_tools.py (v2 pipeline) still exists ONLY as reference: its source dir
-  `~/.hermes/cache/scratch/htmltools` was PRUNED (scratch prunes in 24h —
+  `~/.hermes/cache/scratch/htmltools` was a 24h-pruned scratch dir; snapshot is now at `build/orig/tools/`
   THAT is why the shipped set now lives in git-tracked `build/orig/tools/`).
 - v2 smoke ran from a PRUNED scratch dir and printed 100/100 PASS: true then,
   false now — never trust an old smoke banner; always re-run on what is built.
+- B-pass audit (2026-10-17, on the rebuilt 76-page tree): 0 external network
+  refs (the only `fetch(`/`XMLHttpRequest` strings = OUTPUT text inside
+  cURL→fetch); the one eval surface (`js-runner`'s `new Function`) is BY
+  DESIGN — it's the scratch runner's whole feature — kept, labelled, escaped.
+  Dead handler ids: 0. Landing links == files == manifest: by construction +
+  re-checked after write. Todo checklist (7 checkboxes = its job), dice roller
+  (16 faces on the dice buttons), todo/dice/picker keep their localStorage
+  state — that IS the game/tool; "no state survives refresh" was aspirational,
+  removed from the rule text so the next agent doesn't mutilate a working tool.
 - README's "≤3 controls, 100/100" claim was false-positive machinery (the
   whole-page regex counted <button literals inside JS; real >5 count = 39
   pages). KEPT HONESTLY: todo_checklist (7 checks = its job), dice/wheel/
